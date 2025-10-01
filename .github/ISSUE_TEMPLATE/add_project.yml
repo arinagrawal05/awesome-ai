@@ -1,0 +1,50 @@
+name: Add New Project
+description: Submit a new project to be listed in the README
+title: "[Project] "
+labels: ["project-request"]
+
+body:
+  - type: input
+    id: project-name
+    attributes:
+      label: Project Name
+      placeholder: "Awesome App"
+    validations:
+      required: true
+
+  - type: input
+    id: repo-url
+    attributes:
+      label: Repository URL
+      placeholder: "https://github.com/username/repo"
+    validations:
+      required: true
+
+  - type: input
+    id: project-url
+    attributes:
+      label: Project Website URL (optional)
+      placeholder: "https://awesome.app"
+    validations:
+      required: false
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Short Description
+      placeholder: "A short description of the project"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      description: Choose the most relevant category
+      options:
+        - Music
+        - Video
+        - Chatbot
+        - Other
+    validations:
+      required: true
