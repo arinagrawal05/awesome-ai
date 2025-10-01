@@ -355,3 +355,9 @@ A curated list of **practical AI tools, APIs, and projects** you can use today ð
 | [Petals](https://github.com/bigscience-workshop/petals)         | BitTorrent-style distributed AI model hosting.                      |
 
 ---
+
+## Music
+
+| Name | Repo | Website | Description |
+|------|------|---------|-------------|
+| Web Canvas Editor | [Repo](https://github.com/arinagrawal05/editnest_editor) | â€” | Good canvas |
