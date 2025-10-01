@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up GitHub CLI
-        uses: actions/setup-gh-cli@v2
+        uses: cli/gh-action@v2
         
       - name: Define label rules
         run: |
