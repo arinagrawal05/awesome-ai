@@ -88,6 +88,54 @@ jobs:
           print(f"Extracted project info: {name}, {repo}, {website}, {desc}, {category}")
           EOF
 
+      - name: Add project to README
+        if: ${{ github.event.label.name == 'approved' && contains(env.MAINTAINERS, github.event.sender.login) }}
+        run: |
+          python3 <<EOF
+          import os, re
+          
+          # Read environment variables
+          name = os.environ.get('NAME', '')
+          repo = os.environ.get('REPO', '')
+          website = os.environ.get('WEBSITE', '')
+          desc = os.environ.get('DESC', '')
+          category = os.environ.get('CATEGORY', 'Other')
+          
+          # Read README
+          with open('README.md', 'r', encoding='utf-8') as f:
+              readme = f.read()
+          
+          # Create new row
+          repo_link = f'[Repo]({repo})' if repo else ''
+          website_link = f'[Website]({website})' if website else ''
+          links = ' | '.join(filter(None, [repo_link, website_link]))
+          new_row = f'| {name} | {desc} | {links} | {category} |\n'
+          
+          # Find the table and add row
+          # Look for category section header or end of table
+          category_pattern = rf'(###\s*{re.escape(category)}.*?\n.*?\n)((?:\|.*\n)+)'
+          match = re.search(category_pattern, readme, re.IGNORECASE)
+          
+          if match:
+              # Add to existing category
+              table_end = match.end()
+              readme = readme[:table_end] + new_row + readme[table_end:]
+          else:
+              # Try to add to a general table or at the end
+              # Look for any markdown table
+              table_pattern = r'(\|.*\|.*\n\|[\s\-:|]+\|.*\n)((?:\|.*\n)*)'
+              match = re.search(table_pattern, readme)
+              if match:
+                  table_end = match.end()
+                  readme = readme[:table_end] + new_row + readme[table_end:]
+          
+          # Write back
+          with open('README.md', 'w', encoding='utf-8') as f:
+              f.write(readme)
+          
+          print(f"Added project to README: {name}")
+          EOF
+
       # Create Pull Request
       - name: Create Pull Request
         if: ${{ github.event.label.name == 'approved' && contains(env.MAINTAINERS, github.event.sender.login) }}
