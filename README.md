@@ -367,3 +367,9 @@ A curated list of **practical AI tools, APIs, and projects** you can use today �
 | Name | Repo | Website | Description |
 |------|------|---------|-------------|
 | My market | [Repo](https://github.com/arinagrawal05/awesome-ai/) | — | nice |
+
+## Other
+
+| Name | Repo | Website | Description |
+|------|------|---------|-------------|
+|  | [Repo]() | — |  |
