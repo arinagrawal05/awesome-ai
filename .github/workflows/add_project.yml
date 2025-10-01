@@ -18,8 +18,8 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up GitHub CLI
-        uses: cli/cli-action@v2
-
+        uses: actions/setup-gh-cli@v2
+        
       - name: Define label rules
         run: |
           echo "RESTRICTED=approved,security,release-ready" >> $GITHUB_ENV
