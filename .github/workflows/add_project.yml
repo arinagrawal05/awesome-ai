@@ -1,8 +1,12 @@
-name: Auto Add Project to README
+name: Add Project and Auto Merge
 
 on:
   issues:
     types: [labeled]
+  workflow_run:
+    workflows: ["Add Project and Auto Merge"]
+    types:
+      - completed
 
 permissions:
   contents: write
@@ -11,8 +15,8 @@ permissions:
 
 jobs:
   restrict-and-add-project:
+    if: github.event_name == 'issues'
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -35,7 +39,6 @@ jobs:
           IFS=',' read -ra ALLOWED_ARRAY <<< "$ALLOWED"
           IFS=',' read -ra MAINTAINERS_ARRAY <<< "$MAINTAINERS"
 
-          # Remove restricted label if sender is not maintainer
           if [[ " ${RESTRICTED_ARRAY[*]} " =~ " $LABEL " ]] && [[ ! " ${MAINTAINERS_ARRAY[*]} " =~ " $SENDER " ]]; then
             echo "Restricted label '$LABEL' added by non-maintainer. Removing..."
             gh issue edit $ISSUE_NUMBER --remove-label "$LABEL"
@@ -43,7 +46,6 @@ jobs:
             exit 0
           fi
 
-          # Enforce allowed labels only
           if [[ ! " ${RESTRICTED_ARRAY[*]} " =~ " $LABEL " ]] && [[ ! " ${ALLOWED_ARRAY[*]} " =~ " $LABEL " ]]; then
             echo "Label '$LABEL' is not allowed. Removing..."
             gh issue edit $ISSUE_NUMBER --remove-label "$LABEL"
@@ -118,6 +120,7 @@ jobs:
           PY
 
       - name: Create Pull Request
+        if: ${{ github.event.label.name == 'approved' && contains(env.MAINTAINERS, github.event.sender.login) }}
         id: create_pr
         uses: peter-evans/create-pull-request@v7
         with:
@@ -125,25 +128,26 @@ jobs:
           title: Add project
           body: This PR adds a new project from issue #${{ github.event.issue.number }}
           commit-message: "Add project: $NAME"
-          token: ${{ secrets.MERGE_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           delete-branch: true
-          auto-merge: true
 
-
-      - name: Auto-merge PR with MERGE_TOKEN
-        if: ${{ github.event.label.name == 'approved' && contains(env.MAINTAINERS, github.event.sender.login) }}
+  auto-merge-pr:
+    if: github.event_name == 'workflow_run'
+    runs-on: ubuntu-latest
+    needs: restrict-and-add-project
+    steps:
+      - name: Auto-merge PR
         uses: pascalgn/automerge-action@v0.16.4
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.MERGE_TOKEN }}
           MERGE_LABELS: "approved"
-          MERGE_METHOD: "squash"
-          MERGE_COMMIT_MESSAGE: "pull-request-title-and-description"
+          MERGE_METHOD: squash
+          MERGE_COMMIT_MESSAGE: pull-request-title-and-description
 
-      - name: Close issue and comment
-        if: ${{ github.event.label.name == 'approved' && contains(env.MAINTAINERS, github.event.sender.login) }}
+      - name: Close original issue
+        run: |
+          ISSUE_NUMBER=${{ github.event.workflow_run.head_commit.message }}
+          gh issue close $ISSUE_NUMBER --repo ${{ github.repository }}
+          gh issue comment $ISSUE_NUMBER --body "Project added, PR merged, branch deleted. 🎉"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          ISSUE_NUMBER=${{ github.event.issue.number }}
-          gh issue comment $ISSUE_NUMBER --body "Project has been added, PR merged automatically, and branch deleted. 🎉"
-          gh issue close $ISSUE_NUMBER
