@@ -157,3 +157,5 @@ jobs:
             gh issue close ${{ github.event.issue.number }}
           else
             echo "No open PR found for add-project-${{ github.event.issue.number }}"
+          fi   # <-- this was missing
+
