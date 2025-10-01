@@ -1,51 +1,73 @@
-name: Add Project to README
+name: Auto Add Project to README
 
 on:
-  workflow_dispatch:
-    inputs:
-      issue_number:
-        description: 'Issue number to approve and process'
-        required: true
-        type: number
+  issues:
+    types: [labeled]
 
 permissions:
   contents: write
+  issues: write
   pull-requests: write
 
 jobs:
-  add-project:
+  restrict-and-add-project:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Fetch issue form data
-        id: issue
-        run: |
-          ISSUE_NUMBER=${{ github.event.inputs.issue_number }}
-          echo "Fetching issue #$ISSUE_NUMBER"
-          ISSUE_BODY=$(gh issue view $ISSUE_NUMBER --json body -q '.body')
-          echo "ISSUE_BODY<<EOF" >> $GITHUB_ENV
-          echo "$ISSUE_BODY" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
+      - name: Set up GitHub CLI
+        uses: cli/cli-action@v2
 
-      - name: Parse issue fields
-        id: parse
+      - name: Define label rules
         run: |
+          echo "RESTRICTED=approved,security,release-ready" >> $GITHUB_ENV
+          echo "ALLOWED=bug,question,help wanted,enhancement,Music,Video,Chatbot" >> $GITHUB_ENV
+          echo "MAINTAINERS=your-username1,your-username2" >> $GITHUB_ENV
+
+      - name: Enforce label restrictions
+        run: |
+          LABEL="${{ github.event.label.name }}"
+          SENDER="${{ github.event.sender.login }}"
+          ISSUE_NUMBER=${{ github.event.issue.number }}
+
+          IFS=',' read -ra RESTRICTED_ARRAY <<< "$RESTRICTED"
+          IFS=',' read -ra ALLOWED_ARRAY <<< "$ALLOWED"
+          IFS=',' read -ra MAINTAINERS_ARRAY <<< "$MAINTAINERS"
+
+          # Remove restricted label if sender is not maintainer
+          if [[ " ${RESTRICTED_ARRAY[*]} " =~ " $LABEL " ]] && [[ ! " ${MAINTAINERS_ARRAY[*]} " =~ " $SENDER " ]]; then
+            echo "Restricted label '$LABEL' added by non-maintainer. Removing..."
+            gh issue remove-label $ISSUE_NUMBER "$LABEL"
+            gh issue comment $ISSUE_NUMBER --body "Hi @$SENDER, the label '$LABEL' is restricted to maintainers and has been removed."
+            exit 0
+          fi
+
+          # Optional: enforce allowed labels only
+          if [[ ! " ${RESTRICTED_ARRAY[*]} " =~ " $LABEL " ]] && [[ ! " ${ALLOWED_ARRAY[*]} " =~ " $LABEL " ]]; then
+            echo "Label '$LABEL' is not allowed. Removing..."
+            gh issue remove-label $ISSUE_NUMBER "$LABEL"
+            gh issue comment $ISSUE_NUMBER --body "Hi @$SENDER, the label '$LABEL' is not allowed and has been removed."
+            exit 0
+          fi
+
+      - name: Process project if approved
+        if: ${{ github.event.label.name == 'approved' && contains(env.MAINTAINERS, github.event.sender.login) }}
+        run: |
+          echo "Approved label added by maintainer. Processing project..."
+
+          # Fetch issue body
+          ISSUE_BODY=$(gh issue view ${{ github.event.issue.number }} --json body -q '.body')
+
+          # Parse fields
           NAME=$(echo "$ISSUE_BODY" | grep -A1 "Project Name" | tail -n1 | xargs)
           REPO=$(echo "$ISSUE_BODY" | grep -A1 "Repository URL" | tail -n1 | xargs)
           WEBSITE=$(echo "$ISSUE_BODY" | grep -A1 "Project Website URL" | tail -n1 | xargs)
           DESC=$(echo "$ISSUE_BODY" | grep -A1 "Short Description" | tail -n1 | xargs)
           CATEGORY=$(echo "$ISSUE_BODY" | grep -A1 "Category" | tail -n1 | xargs)
-          echo "NAME=$NAME" >> $GITHUB_ENV
-          echo "REPO=$REPO" >> $GITHUB_ENV
-          echo "WEBSITE=$WEBSITE" >> $GITHUB_ENV
-          echo "DESC=$DESC" >> $GITHUB_ENV
-          echo "CATEGORY=$CATEGORY" >> $GITHUB_ENV
 
-      - name: Update README
-        run: |
+          # Update README using Python (avoids duplicates)
           python3 - <<'PY'
           import re
           from pathlib import Path
@@ -53,33 +75,27 @@ jobs:
           readme = Path("README.md")
           text = readme.read_text(encoding="utf-8") if readme.exists() else ""
 
-          name = "${{ env.NAME }}"
-          repo = "${{ env.REPO }}"
-          website = "${{ env.WEBSITE }}"
-          desc = "${{ env.DESC }}"
-          category = "${{ env.CATEGORY }}" or "Other"
-
+          name = "${NAME}"
+          repo = "${REPO}"
+          website = "${WEBSITE}"
+          desc = "${DESC}"
+          category = "${CATEGORY}" or "Other"
           website_md = f"[{website}]({website})" if website else "—"
           row = f"| {name} | [Repo]({repo}) | {website_md} | {desc} |"
 
           lines = text.splitlines()
-          # Find existing category table
           cat_header_pattern = re.compile(rf"##\s*{re.escape(category)}", re.I)
           header_idx = next((i for i, l in enumerate(lines) if cat_header_pattern.match(l)), None)
 
           if header_idx is not None:
-              # Find table header
               table_header_idx = next((i for i in range(header_idx+1, len(lines))
                                        if re.search(r"\|\s*Name\s*\|.*\|\s*Repo\s*\|", lines[i])), None)
               if table_header_idx is not None:
-                  # Check if project already exists
                   if any(name in l for l in lines[table_header_idx+2:]):
-                      print(f"Project '{name}' already exists in category '{category}'. Skipping insert.")
+                      print(f"Project '{name}' already exists in '{category}'. Skipping insert.")
                   else:
-                      # Insert row after table header separator
                       lines.insert(table_header_idx + 2, row)
               else:
-                  # Table header not found, create it
                   insert_at = header_idx + 1
                   block = [
                       "",
@@ -90,7 +106,6 @@ jobs:
                   for offset, l in enumerate(block):
                       lines.insert(insert_at + offset, l)
           else:
-              # Category not found, create new section + table
               if lines and lines[-1].strip() != "":
                   lines.append("")
               lines.append(f"## {category}")
@@ -100,21 +115,31 @@ jobs:
               lines.append(row)
 
           readme.write_text("\n".join(lines)+"\n", encoding="utf-8")
-          print(f"Inserted project '{name}' into category '{category}'")
+          print(f"Inserted project '{name}' into '{category}'")
           PY
 
       - name: Create Pull Request
+        if: ${{ github.event.label.name == 'approved' && contains(env.MAINTAINERS, github.event.sender.login) }}
         id: create_pr
         uses: peter-evans/create-pull-request@v7
         with:
-          branch: ${{ format('add-project-{0}', github.event.inputs.issue_number) }}
+          branch: ${{ format('add-project-{0}', github.event.issue.number) }}
           title: "Add project: ${{ env.NAME }}"
-          body: ${{ format('This PR adds a new project from issue #{0}', github.event.inputs.issue_number) }}
+          body: ${{ format('This PR adds a new project from issue #{0}', github.event.issue.number) }}
           commit-message: "Add project: ${{ env.NAME }}"
           token: ${{ secrets.GITHUB_TOKEN }}
+          delete-branch: true
 
-      - name: Auto-merge PR
+      - name: Auto-merge PR with MERGE_TOKEN
+        if: ${{ github.event.label.name == 'approved' && contains(env.MAINTAINERS, github.event.sender.login) }}
         uses: pascalgn/automerge-action@v0.15.0
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.MERGE_TOKEN }}
           merge_method: squash
+
+      - name: Close issue and comment
+        if: ${{ github.event.label.name == 'approved' && contains(env.MAINTAINERS, github.event.sender.login) }}
+        run: |
+          ISSUE_NUMBER=${{ github.event.issue.number }}
+          gh issue comment $ISSUE_NUMBER --body "Project has been added, PR merged automatically, and branch deleted. 🎉"
+          gh issue close $ISSUE_NUMBER
