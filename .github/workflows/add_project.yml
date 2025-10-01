@@ -52,110 +52,41 @@ jobs:
           fi
 
       # Extract project info (regex based, case-insensitive)
-      - name: Extract project info
-        if: ${{ github.event.label.name == 'approved' && contains(env.MAINTAINERS, github.event.sender.login) }}
-        id: extract
-        run: |
-          ISSUE_BODY=$(gh issue view ${{ github.event.issue.number }} --json body -q '.body')
-          export ISSUE_BODY
-
-          python3 - <<'PY'
-import os, re
-
-body = os.environ.get("ISSUE_BODY", "")
-
-def extract(pattern, default=""):
-    m = re.search(pattern, body, re.I)
-    return m.group(1).strip() if m else default
-
-name = extract(r"Project Name[:\s]*([\s\S]*?)(?:\n|$)")
-repo = extract(r"Repository URL[:\s]*([^\s]+)")
-website = extract(r"Project Website URL[:\s]*([^\s]+)")
-desc = extract(r"Short Description[:\s]*([\s\S]*?)(?:\n|$)")
-category = extract(r"Category[:\s]*([\w\s]+)", "Other")
-
-# Normalize category: capitalize first letter of each word
-category = category.strip().title()
-
-with open(os.environ["GITHUB_ENV"], "a") as f:
-    f.write(f"NAME={name}\n")
-    f.write(f"REPO={repo}\n")
-    f.write(f"WEBSITE={website}\n")
-    f.write(f"DESC={desc}\n")
-    f.write(f"CATEGORY={category}\n")
-
-print("Extracted project info:")
-print("Name:", name)
-print("Repo:", repo)
-print("Website:", website)
-print("Desc:", desc)
-print("Category:", category)
-          PY
-
-      # Update README with extracted info
-      - name: Update README
+      - name: Save issue body
         if: ${{ github.event.label.name == 'approved' && contains(env.MAINTAINERS, github.event.sender.login) }}
         run: |
-          python3 - <<'PY'
-import re
-from pathlib import Path
-import os
-
-readme = Path("README.md")
-text = readme.read_text(encoding="utf-8") if readme.exists() else ""
-
-name = os.environ["NAME"]
-repo = os.environ["REPO"]
-website = os.environ["WEBSITE"]
-desc = os.environ["DESC"]
-category = os.environ.get("CATEGORY") or "Other"
-
-website_md = f"[{website}]({website})" if website else "—"
-row = f"| {name} | [Repo]({repo}) | {website_md} | {desc} |"
-
-lines = text.splitlines()
-
-# Find category header (case-insensitive)
-cat_header_pattern = re.compile(rf"##\s*{re.escape(category)}", re.I)
-header_idx = next((i for i, l in enumerate(lines) if cat_header_pattern.match(l)), None)
-
-if header_idx is not None:
-    # Find table header below category header
-    table_header_idx = next(
-        (i for i in range(header_idx+1, len(lines))
-         if re.search(r"\|\s*name\s*\|.*\|\s*repo\s*\|", lines[i], re.I)),
-        None
-    )
-    if table_header_idx is not None:
-        # Check if project already exists
-        if any(re.search(rf"\|\s*{re.escape(name)}\s*\|", l, re.I) for l in lines[table_header_idx+2:]):
-            print(f"Project '{name}' already exists in '{category}'. Skipping insert.")
-        else:
-            lines.insert(table_header_idx + 2, row)
-    else:
-        # No table exists yet under this category → create one
-        insert_at = header_idx + 1
-        block = [
-            "",
-            "| Name | Repo | Website | Description |",
-            "|------|------|---------|-------------|",
-            row
-        ]
-        for offset, l in enumerate(block):
-            lines.insert(insert_at + offset, l)
-else:
-    # Category section doesn't exist → create it
-    if lines and lines[-1].strip() != "":
-        lines.append("")
-    lines.append(f"## {category}")
-    lines.append("")
-    lines.append("| Name | Repo | Website | Description |")
-    lines.append("|------|------|---------|-------------|")
-    lines.append(row)
-
-readme.write_text("\n".join(lines) + "\n", encoding="utf-8")
-print(f"Inserted project '{name}' into '{category}'")
-          PY
+          gh issue view ${{ github.event.issue.number }} --json body -q '.body' > issue_body.txt
+      
+      - name: Extract project info with Python
+        if: ${{ github.event.label.name == 'approved' && contains(env.MAINTAINERS, github.event.sender.login) }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python3 <<EOF
+          import os, re
+          
+          with open("issue_body.txt", encoding="utf-8") as f:
+              body = f.read()
+          
+          def extract(pattern, default=""):
+              m = re.search(pattern, body, re.I)
+              return m.group(1).strip() if m else default
+          
+          name = extract(r"Project Name[:\s]*([\s\S]*?)(?:\n|$)")
+          repo = extract(r"Repository URL[:\s]*([^\s]+)")
+          website = extract(r"Project Website URL[:\s]*([^\s]+)")
+          desc = extract(r"Short Description[:\s]*([\s\S]*?)(?:\n|$)")
+          category = extract(r"Category[:\s]*([\w\s]+)", "Other").title()
+          
+          with open(os.environ['GITHUB_ENV'], 'a') as f:
+              f.write(f'NAME={name}\n')
+              f.write(f'REPO={repo}\n')
+              f.write(f'WEBSITE={website}\n')
+              f.write(f'DESC={desc}\n')
+              f.write(f'CATEGORY={category}\n')
+          
+          print(f"Extracted project info: {name}, {repo}, {website}, {desc}, {category}")
+          EOF
 
       # Create Pull Request
       - name: Create Pull Request
@@ -184,3 +115,4 @@ print(f"Inserted project '{name}' into '{category}'")
             gh issue close ${{ github.event.issue.number }}
           else
             echo "No open PR found for add-project-${{ github.event.issue.number }}"
+          fi
