@@ -131,7 +131,7 @@ jobs:
       
       - name: Auto-merge PR with MERGE_TOKEN
         if: ${{ github.event.label.name == 'approved' && contains(env.MAINTAINERS, github.event.sender.login) }}
-        uses: pascalgn/automerge-action@v0.18.1
+        uses: pascalgn/automerge-action@v0.16.4
         with:
           token: ${{ secrets.MERGE_TOKEN }}
           mergeMethod: squash
