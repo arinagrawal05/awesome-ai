@@ -51,7 +51,7 @@ jobs:
             exit 0
           fi
 
-      # Process project if approved
+      # Extract project info
       - name: Extract project info
         if: ${{ github.event.label.name == 'approved' && contains(env.MAINTAINERS, github.event.sender.login) }}
         id: extract
@@ -74,60 +74,61 @@ jobs:
           echo "DESC=$DESC" >> $GITHUB_ENV
           echo "CATEGORY=$CATEGORY" >> $GITHUB_ENV
 
+      # Update README with extracted info
       - name: Update README
         if: ${{ github.event.label.name == 'approved' && contains(env.MAINTAINERS, github.event.sender.login) }}
         run: |
           python3 - <<'PY'
-import re
-from pathlib import Path
-import os
+          import re
+          from pathlib import Path
+          import os
 
-readme = Path("README.md")
-text = readme.read_text(encoding="utf-8") if readme.exists() else ""
+          readme = Path("README.md")
+          text = readme.read_text(encoding="utf-8") if readme.exists() else ""
 
-name = os.environ["NAME"]
-repo = os.environ["REPO"]
-website = os.environ["WEBSITE"]
-desc = os.environ["DESC"]
-category = os.environ.get("CATEGORY") or "Other"
+          name = os.environ["NAME"]
+          repo = os.environ["REPO"]
+          website = os.environ["WEBSITE"]
+          desc = os.environ["DESC"]
+          category = os.environ.get("CATEGORY") or "Other"
 
-website_md = f"[{website}]({website})" if website else "—"
-row = f"| {name} | [Repo]({repo}) | {website_md} | {desc} |"
+          website_md = f"[{website}]({website})" if website else "—"
+          row = f"| {name} | [Repo]({repo}) | {website_md} | {desc} |"
 
-lines = text.splitlines()
-cat_header_pattern = re.compile(rf"##\s*{re.escape(category)}", re.I)
-header_idx = next((i for i, l in enumerate(lines) if cat_header_pattern.match(l)), None)
+          lines = text.splitlines()
+          cat_header_pattern = re.compile(rf"##\s*{re.escape(category)}", re.I)
+          header_idx = next((i for i, l in enumerate(lines) if cat_header_pattern.match(l)), None)
 
-if header_idx is not None:
-    table_header_idx = next((i for i in range(header_idx+1, len(lines))
-                             if re.search(r"\|\s*Name\s*\|.*\|\s*Repo\s*\|", lines[i])), None)
-    if table_header_idx is not None:
-        if any(name in l for l in lines[table_header_idx+2:]):
-            print(f"Project '{name}' already exists in '{category}'. Skipping insert.")
-        else:
-            lines.insert(table_header_idx + 2, row)
-    else:
-        insert_at = header_idx + 1
-        block = [
-            "",
-            "| Name | Repo | Website | Description |",
-            "|------|------|---------|-------------|",
-            row
-        ]
-        for offset, l in enumerate(block):
-            lines.insert(insert_at + offset, l)
-else:
-    if lines and lines[-1].strip() != "":
-        lines.append("")
-    lines.append(f"## {category}")
-    lines.append("")
-    lines.append("| Name | Repo | Website | Description |")
-    lines.append("|------|------|---------|-------------|")
-    lines.append(row)
+          if header_idx is not None:
+              table_header_idx = next((i for i in range(header_idx+1, len(lines))
+                                       if re.search(r"\|\s*Name\s*\|.*\|\s*Repo\s*\|", lines[i])), None)
+              if table_header_idx is not None:
+                  if any(name in l for l in lines[table_header_idx+2:]):
+                      print(f"Project '{name}' already exists in '{category}'. Skipping insert.")
+                  else:
+                      lines.insert(table_header_idx + 2, row)
+              else:
+                  insert_at = header_idx + 1
+                  block = [
+                      "",
+                      "| Name | Repo | Website | Description |",
+                      "|------|------|---------|-------------|",
+                      row
+                  ]
+                  for offset, l in enumerate(block):
+                      lines.insert(insert_at + offset, l)
+          else:
+              if lines and lines[-1].strip() != "":
+                  lines.append("")
+              lines.append(f"## {category}")
+              lines.append("")
+              lines.append("| Name | Repo | Website | Description |")
+              lines.append("|------|------|---------|-------------|")
+              lines.append(row)
 
-readme.write_text("\n".join(lines) + "\n", encoding="utf-8")
-print(f"Inserted project '{name}' into '{category}'")
-PY
+          readme.write_text("\n".join(lines) + "\n", encoding="utf-8")
+          print(f"Inserted project '{name}' into '{category}'")
+          PY
 
       # Create Pull Request
       - name: Create Pull Request
