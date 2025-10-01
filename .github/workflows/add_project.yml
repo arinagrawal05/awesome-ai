@@ -27,24 +27,26 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          LABEL="${GITHUB_EVENT_LABEL_NAME}"
-          SENDER="${GITHUB_EVENT_SENDER_LOGIN}"
-          ISSUE_NUMBER="${GITHUB_EVENT_ISSUE_NUMBER}"
+          LABEL="${{ github.event.label.name }}"
+          SENDER="${{ github.event.sender.login }}"
+          ISSUE_NUMBER="${{ github.event.issue.number }}"
 
           IFS=',' read -ra RESTRICTED_ARRAY <<< "$RESTRICTED"
           IFS=',' read -ra ALLOWED_ARRAY <<< "$ALLOWED"
           IFS=',' read -ra MAINTAINERS_ARRAY <<< "$MAINTAINERS"
 
+          # Remove restricted label if sender is not maintainer
           if [[ " ${RESTRICTED_ARRAY[*]} " =~ " $LABEL " ]] && [[ ! " ${MAINTAINERS_ARRAY[*]} " =~ " $SENDER " ]]; then
             echo "Restricted label '$LABEL' added by non-maintainer. Removing..."
-            gh issue remove-label $ISSUE_NUMBER "$LABEL"
+            gh issue edit $ISSUE_NUMBER --remove-label "$LABEL"
             gh issue comment $ISSUE_NUMBER --body "Hi @$SENDER, the label '$LABEL' is restricted to maintainers and has been removed."
             exit 0
           fi
 
+          # Enforce allowed labels only
           if [[ ! " ${RESTRICTED_ARRAY[*]} " =~ " $LABEL " ]] && [[ ! " ${ALLOWED_ARRAY[*]} " =~ " $LABEL " ]]; then
             echo "Label '$LABEL' is not allowed. Removing..."
-            gh issue remove-label $ISSUE_NUMBER "$LABEL"
+            gh issue edit $ISSUE_NUMBER --remove-label "$LABEL"
             gh issue comment $ISSUE_NUMBER --body "Hi @$SENDER, the label '$LABEL' is not allowed and has been removed."
             exit 0
           fi
@@ -53,11 +55,6 @@ jobs:
         if: ${{ github.event.label.name == 'approved' && contains(env.MAINTAINERS, github.event.sender.login) }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NAME: ""
-          REPO: ""
-          WEBSITE: ""
-          DESC: ""
-          CATEGORY: ""
         run: |
           echo "Approved label added by maintainer. Processing project..."
 
