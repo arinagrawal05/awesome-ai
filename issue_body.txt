@@ -1,18 +1,18 @@
 ### Project Name
 
-AI Singing ROBOT
+Web Canvas Editor
 
 ### Repository URL
 
-https://github.com/arinagrawal05/awesome-ai/
+https://github.com/arinagrawal05/editnest_editor
 
 ### Project Website URL (optional)
 
-https://github.com/arinagrawal05/awesome-ai/
+editnest.netlify.app
 
 ### Short Description
 
-good robot
+Good canvas
 
 ### Category
 

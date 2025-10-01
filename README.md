@@ -207,6 +207,7 @@ A curated list of **practical AI tools, APIs, and projects** you can use today ð
 | [Text2Infographic](https://text2infographic.com/)     | AI infographic generator and editor.                                          |
 | [Seede.ai](https://seede.ai/)                         | Create a stunning poster in just 1 minute.                                    |
 | [Magic Patterns](https://www.magicpatterns.com/)      | AI-based UI builder with Figma export & React code generation.                |
+| Web Canvas Editor | Good canvas | [Repo](https://github.com/arinagrawal05/editnest_editor) | [Website]((optional)) | Music |
 
 ---
 
