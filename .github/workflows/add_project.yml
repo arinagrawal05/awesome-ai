@@ -128,13 +128,13 @@ jobs:
           commit-message: "Add project: $NAME"
           token: ${{ secrets.GITHUB_TOKEN }}
           delete-branch: true
-
+      
       - name: Auto-merge PR with MERGE_TOKEN
         if: ${{ github.event.label.name == 'approved' && contains(env.MAINTAINERS, github.event.sender.login) }}
-        uses: pascalgn/automerge-action@v0.15.0
+        uses: pascalgn/automerge-action@v0.18.1
         with:
-          github_token: ${{ secrets.MERGE_TOKEN }}
-          merge_method: squash
+          token: ${{ secrets.MERGE_TOKEN }}
+          mergeMethod: squash
 
       - name: Close issue and comment
         if: ${{ github.event.label.name == 'approved' && contains(env.MAINTAINERS, github.event.sender.login) }}
