@@ -1,0 +1,97 @@
+name: Bug Report
+description: Report a bug or unexpected behavior
+title: "[BUG] "
+labels: [bug]
+
+body:
+  - type: input
+    id: description
+    attributes:
+      label: Description
+      description: Describe the issue in detail.
+      placeholder: "Encountered an error when..."
+    validations:
+      required: true
+
+  - type: input
+    id: related-issues
+    attributes:
+      label: Related Issues
+      placeholder: "#123, #456"
+      
+  - type: textarea
+    id: questions
+    attributes:
+      label: Questions
+      placeholder: Any questions for reviewers?
+      value: "No."
+      
+  - type: input
+    id: demo
+    attributes:
+      label: Demo
+      placeholder: "Link to live demo if available"
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction Steps
+      description: What steps are required to reproduce the unexpected output?
+      value: |
+        - a
+        - b
+        - c
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-results
+    attributes:
+      label: Expected Results
+      placeholder: Insert expected results here
+
+  - type: textarea
+    id: actual-results
+    attributes:
+      label: Actual Results
+      placeholder: Insert actual results here
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      placeholder: "What version of stdlib are you running?"
+
+  - type: textarea
+    id: environments
+    attributes:
+      label: Environments
+      placeholder: "List affected environments"
+
+  - type: input
+    id: browser-version
+    attributes:
+      label: Browser Version
+      placeholder: "If applicable"
+
+  - type: input
+    id: node-version
+    attributes:
+      label: Node.js / npm Version
+      placeholder: "If applicable"
+
+  - type: input
+    id: platform
+    attributes:
+      label: Platform
+      placeholder: "If applicable"
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I have read and understood the Code of Conduct
+          required: true
+        - label: I have searched for existing issues and PRs
+          required: true
