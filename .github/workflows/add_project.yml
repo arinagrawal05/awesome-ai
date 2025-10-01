@@ -27,7 +27,7 @@ jobs:
       # Enforce label restrictions
       - name: Enforce label restrictions
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           LABEL="${{ github.event.label.name }}"
           SENDER="${{ github.event.sender.login }}"
@@ -54,13 +54,13 @@ jobs:
       # Extract project info (regex based, case-insensitive)
       - name: Save issue body
         if: ${{ github.event.label.name == 'approved' && contains(env.MAINTAINERS, github.event.sender.login) }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh issue view ${{ github.event.issue.number }} --json body -q '.body' > issue_body.txt
       
       - name: Extract project info with Python
         if: ${{ github.event.label.name == 'approved' && contains(env.MAINTAINERS, github.event.sender.login) }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           python3 <<EOF
           import os, re
