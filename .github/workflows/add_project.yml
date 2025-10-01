@@ -28,15 +28,14 @@ jobs:
 
       - name: Enforce label restrictions
         run: |
-          LABEL="${{ github.event.label.name }}"
-          SENDER="${{ github.event.sender.login }}"
-          ISSUE_NUMBER=${{ github.event.issue.number }}
+          LABEL="${GITHUB_EVENT_LABEL_NAME}"
+          SENDER="${GITHUB_EVENT_SENDER_LOGIN}"
+          ISSUE_NUMBER="${GITHUB_EVENT_ISSUE_NUMBER}"
 
           IFS=',' read -ra RESTRICTED_ARRAY <<< "$RESTRICTED"
           IFS=',' read -ra ALLOWED_ARRAY <<< "$ALLOWED"
           IFS=',' read -ra MAINTAINERS_ARRAY <<< "$MAINTAINERS"
 
-          # Remove restricted label if sender is not maintainer
           if [[ " ${RESTRICTED_ARRAY[*]} " =~ " $LABEL " ]] && [[ ! " ${MAINTAINERS_ARRAY[*]} " =~ " $SENDER " ]]; then
             echo "Restricted label '$LABEL' added by non-maintainer. Removing..."
             gh issue remove-label $ISSUE_NUMBER "$LABEL"
@@ -44,7 +43,6 @@ jobs:
             exit 0
           fi
 
-          # Optional: enforce allowed labels only
           if [[ ! " ${RESTRICTED_ARRAY[*]} " =~ " $LABEL " ]] && [[ ! " ${ALLOWED_ARRAY[*]} " =~ " $LABEL " ]]; then
             echo "Label '$LABEL' is not allowed. Removing..."
             gh issue remove-label $ISSUE_NUMBER "$LABEL"
@@ -57,17 +55,14 @@ jobs:
         run: |
           echo "Approved label added by maintainer. Processing project..."
 
-          # Fetch issue body
           ISSUE_BODY=$(gh issue view ${{ github.event.issue.number }} --json body -q '.body')
 
-          # Parse fields
           NAME=$(echo "$ISSUE_BODY" | grep -A1 "Project Name" | tail -n1 | xargs)
           REPO=$(echo "$ISSUE_BODY" | grep -A1 "Repository URL" | tail -n1 | xargs)
           WEBSITE=$(echo "$ISSUE_BODY" | grep -A1 "Project Website URL" | tail -n1 | xargs)
           DESC=$(echo "$ISSUE_BODY" | grep -A1 "Short Description" | tail -n1 | xargs)
           CATEGORY=$(echo "$ISSUE_BODY" | grep -A1 "Category" | tail -n1 | xargs)
 
-          # Update README using Python (avoids duplicates)
           python3 - <<'PY'
           import re
           from pathlib import Path
@@ -75,11 +70,12 @@ jobs:
           readme = Path("README.md")
           text = readme.read_text(encoding="utf-8") if readme.exists() else ""
 
-          name = "${NAME}"
-          repo = "${REPO}"
-          website = "${WEBSITE}"
-          desc = "${DESC}"
-          category = "${CATEGORY}" or "Other"
+          import os
+          name = os.environ["NAME"]
+          repo = os.environ["REPO"]
+          website = os.environ["WEBSITE"]
+          desc = os.environ["DESC"]
+          category = os.environ["CATEGORY"] or "Other"
           website_md = f"[{website}]({website})" if website else "—"
           row = f"| {name} | [Repo]({repo}) | {website_md} | {desc} |"
 
@@ -123,10 +119,10 @@ jobs:
         id: create_pr
         uses: peter-evans/create-pull-request@v7
         with:
-          branch: ${{ format('add-project-{0}', github.event.issue.number) }}
-          title: "Add project: ${{ env.NAME }}"
-          body: ${{ format('This PR adds a new project from issue #{0}', github.event.issue.number) }}
-          commit-message: "Add project: ${{ env.NAME }}"
+          branch: add-project-${{ github.event.issue.number }}
+          title: Add project
+          body: This PR adds a new project from issue #${{ github.event.issue.number }}
+          commit-message: "Add project: $NAME"
           token: ${{ secrets.GITHUB_TOKEN }}
           delete-branch: true
 
