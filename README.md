@@ -361,3 +361,9 @@ A curated list of **practical AI tools, APIs, and projects** you can use today �
 | Name | Repo | Website | Description |
 |------|------|---------|-------------|
 | Web Canvas Editor | [Repo](https://github.com/arinagrawal05/editnest_editor) | — | Good canvas |
+
+## Music
+
+| Name | Repo | Website | Description |
+|------|------|---------|-------------|
+| My market | [Repo](https://github.com/arinagrawal05/awesome-ai/) | — | nice |
