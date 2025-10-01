@@ -208,6 +208,7 @@ A curated list of **practical AI tools, APIs, and projects** you can use today ð
 | [Seede.ai](https://seede.ai/)                         | Create a stunning poster in just 1 minute.                                    |
 | [Magic Patterns](https://www.magicpatterns.com/)      | AI-based UI builder with Figma export & React code generation.                |
 | Web Canvas Editor | Good canvas | [Repo](https://github.com/arinagrawal05/editnest_editor) | [Website]((optional)) | Music |
+| https://github.com/arinagrawal05/awesome-ai/ | https://github.com/arinagrawal05/awesome-ai/ | [Repo](https://github.com/arinagrawal05/awesome-ai/) | [Website]((optional)) | Music |
 
 ---
 
