@@ -51,28 +51,47 @@ jobs:
             exit 0
           fi
 
-      # Extract project info
+      # Extract project info (regex based, case-insensitive)
       - name: Extract project info
         if: ${{ github.event.label.name == 'approved' && contains(env.MAINTAINERS, github.event.sender.login) }}
         id: extract
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "Approved label added by maintainer. Processing project..."
-
           ISSUE_BODY=$(gh issue view ${{ github.event.issue.number }} --json body -q '.body')
 
-          NAME=$(echo "$ISSUE_BODY" | grep -A1 "Project Name" | tail -n1 | xargs)
-          REPO=$(echo "$ISSUE_BODY" | grep -A1 "Repository URL" | tail -n1 | xargs)
-          WEBSITE=$(echo "$ISSUE_BODY" | grep -A1 "Project Website URL" | tail -n1 | xargs)
-          DESC=$(echo "$ISSUE_BODY" | grep -A1 "Short Description" | tail -n1 | xargs)
-          CATEGORY=$(echo "$ISSUE_BODY" | grep -A1 "Category" | tail -n1 | xargs)
+          python3 - <<'PY'
+          import os, re
 
-          echo "NAME=$NAME" >> $GITHUB_ENV
-          echo "REPO=$REPO" >> $GITHUB_ENV
-          echo "WEBSITE=$WEBSITE" >> $GITHUB_ENV
-          echo "DESC=$DESC" >> $GITHUB_ENV
-          echo "CATEGORY=$CATEGORY" >> $GITHUB_ENV
+          body = os.environ["ISSUE_BODY"]
+
+          def extract(pattern, default=""):
+              m = re.search(pattern, body, re.I)
+              return m.group(1).strip() if m else default
+
+          name = extract(r"Project Name[:\s]*([\s\S]*?)(?:\n|$)")
+          repo = extract(r"Repository URL[:\s]*([^\s]+)")
+          website = extract(r"Project Website URL[:\s]*([^\s]+)")
+          desc = extract(r"Short Description[:\s]*([\s\S]*?)(?:\n|$)")
+          category = extract(r"Category[:\s]*([\w\s]+)", "Other")
+
+          # Normalize category: capitalize first letter, lower the rest
+          category = category.strip().title()
+
+          with open(os.environ["GITHUB_ENV"], "a") as f:
+              f.write(f"NAME={name}\n")
+              f.write(f"REPO={repo}\n")
+              f.write(f"WEBSITE={website}\n")
+              f.write(f"DESC={desc}\n")
+              f.write(f"CATEGORY={category}\n")
+
+          print("Extracted project info:")
+          print("Name:", name)
+          print("Repo:", repo)
+          print("Website:", website)
+          print("Desc:", desc)
+          print("Category:", category)
+          PY
 
       # Update README with extracted info
       - name: Update README
@@ -96,18 +115,26 @@ jobs:
           row = f"| {name} | [Repo]({repo}) | {website_md} | {desc} |"
 
           lines = text.splitlines()
+
+          # Find category header (case-insensitive)
           cat_header_pattern = re.compile(rf"##\s*{re.escape(category)}", re.I)
           header_idx = next((i for i, l in enumerate(lines) if cat_header_pattern.match(l)), None)
 
           if header_idx is not None:
-              table_header_idx = next((i for i in range(header_idx+1, len(lines))
-                                       if re.search(r"\|\s*Name\s*\|.*\|\s*Repo\s*\|", lines[i])), None)
+              # Find table header below category header
+              table_header_idx = next(
+                  (i for i in range(header_idx+1, len(lines))
+                   if re.search(r"\|\s*name\s*\|.*\|\s*repo\s*\|", lines[i], re.I)),
+                  None
+              )
               if table_header_idx is not None:
-                  if any(name in l for l in lines[table_header_idx+2:]):
+                  # Check if project already exists
+                  if any(re.search(rf"\|\s*{re.escape(name)}\s*\|", l, re.I) for l in lines[table_header_idx+2:]):
                       print(f"Project '{name}' already exists in '{category}'. Skipping insert.")
                   else:
                       lines.insert(table_header_idx + 2, row)
               else:
+                  # No table exists yet under this category → create one
                   insert_at = header_idx + 1
                   block = [
                       "",
@@ -118,6 +145,7 @@ jobs:
                   for offset, l in enumerate(block):
                       lines.insert(insert_at + offset, l)
           else:
+              # Category section doesn't exist → create it
               if lines and lines[-1].strip() != "":
                   lines.append("")
               lines.append(f"## {category}")
@@ -157,5 +185,4 @@ jobs:
             gh issue close ${{ github.event.issue.number }}
           else
             echo "No open PR found for add-project-${{ github.event.issue.number }}"
-          fi   # <-- this was missing
-
+          fi
