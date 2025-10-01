@@ -13,7 +13,7 @@ jobs:
   restrict-and-add-project:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Define label rules
@@ -34,7 +34,6 @@ jobs:
           IFS=',' read -ra ALLOWED_ARRAY <<< "$ALLOWED"
           IFS=',' read -ra MAINTAINERS_ARRAY <<< "$MAINTAINERS"
 
-          # Remove restricted label if sender is not maintainer
           if [[ " ${RESTRICTED_ARRAY[*]} " =~ " $LABEL " ]] && [[ ! " ${MAINTAINERS_ARRAY[*]} " =~ " $SENDER " ]]; then
             echo "Restricted label '$LABEL' added by non-maintainer. Removing..."
             gh issue edit $ISSUE_NUMBER --remove-label "$LABEL"
@@ -42,7 +41,6 @@ jobs:
             exit 0
           fi
 
-          # Remove label if not allowed
           if [[ ! " ${RESTRICTED_ARRAY[*]} " =~ " $LABEL " ]] && [[ ! " ${ALLOWED_ARRAY[*]} " =~ " $LABEL " ]]; then
             echo "Label '$LABEL' is not allowed. Removing..."
             gh issue edit $ISSUE_NUMBER --remove-label "$LABEL"
@@ -131,7 +129,7 @@ jobs:
       - name: Merge PR, delete branch, and close issue
         if: ${{ github.event.label.name == 'approved' && contains(env.MAINTAINERS, github.event.sender.login) }}
         env:
-          GITHUB_TOKEN: ${{ secrets.MERGE_TOKEN }}
+          GH_TOKEN: ${{ secrets.MERGE_TOKEN }}
         run: |
           # Get PR number for the branch
           PR_NUMBER=$(gh pr list --state open --head add-project-${{ github.event.issue.number }} --json number -q '.[0].number')
@@ -142,4 +140,3 @@ jobs:
             gh issue close ${{ github.event.issue.number }}
           else
             echo "No open PR found for add-project-${{ github.event.issue.number }}"
-          fi
