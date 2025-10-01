@@ -118,7 +118,6 @@ jobs:
           PY
 
       - name: Create Pull Request
-        if: ${{ github.event.label.name == 'approved' && contains(env.MAINTAINERS, github.event.sender.login) }}
         id: create_pr
         uses: peter-evans/create-pull-request@v7
         with:
@@ -126,8 +125,10 @@ jobs:
           title: Add project
           body: This PR adds a new project from issue #${{ github.event.issue.number }}
           commit-message: "Add project: $NAME"
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.MERGE_TOKEN }}
           delete-branch: true
+          auto-merge: true
+
 
       - name: Auto-merge PR with MERGE_TOKEN
         if: ${{ github.event.label.name == 'approved' && contains(env.MAINTAINERS, github.event.sender.login) }}
