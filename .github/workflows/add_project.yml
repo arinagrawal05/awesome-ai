@@ -21,7 +21,7 @@ jobs:
         run: |
           echo "RESTRICTED=approved,security,release-ready" >> $GITHUB_ENV
           echo "ALLOWED=bug,question,help wanted,enhancement,Music,Video,Chatbot" >> $GITHUB_ENV
-          echo "MAINTAINERS=your-username1,your-username2" >> $GITHUB_ENV
+          echo "MAINTAINERS=arinagrawal05" >> $GITHUB_ENV
 
       - name: Enforce label restrictions
         env:
