@@ -1,104 +1,85 @@
 name: Add Project to README
 
 on:
-  issues:
-    types: [labeled]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: 'Issue number to approve and process'
+        required: true
+        type: number
 
-# allow workflow to push & create PRs
 permissions:
   contents: write
   pull-requests: write
 
 jobs:
   add-project:
-    # only run when the added label is "approved"
-    if: ${{ github.event.label.name == 'approved' }}
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          persist-credentials: true
 
-      - name: Parse issue form (convert to JSON)
-        id: parse
-        uses: onmax/issue-form-parser@v1.6
-        with:
-          issue_number: ${{ github.event.issue.number }}
-
-      - name: Save parsed payload to file
+      - name: Fetch issue form data
+        id: issue
         run: |
-          echo '${{ steps.parse.outputs.payload }}' > parsed.json
+          ISSUE_NUMBER=${{ github.event.inputs.issue_number }}
+          echo "Fetching issue #$ISSUE_NUMBER"
+          ISSUE_BODY=$(gh issue view $ISSUE_NUMBER --json body -q '.body')
+          echo "ISSUE_BODY<<EOF" >> $GITHUB_ENV
+          echo "$ISSUE_BODY" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
 
-      - name: Update README (insert row under selected category)
+      - name: Parse issue fields
+        id: parse
+        run: |
+          NAME=$(echo "$ISSUE_BODY" | grep -A1 "Project Name" | tail -n1 | xargs)
+          REPO=$(echo "$ISSUE_BODY" | grep -A1 "Repository URL" | tail -n1 | xargs)
+          WEBSITE=$(echo "$ISSUE_BODY" | grep -A1 "Project Website URL" | tail -n1 | xargs)
+          DESC=$(echo "$ISSUE_BODY" | grep -A1 "Short Description" | tail -n1 | xargs)
+          CATEGORY=$(echo "$ISSUE_BODY" | grep -A1 "Category" | tail -n1 | xargs)
+          echo "NAME=$NAME" >> $GITHUB_ENV
+          echo "REPO=$REPO" >> $GITHUB_ENV
+          echo "WEBSITE=$WEBSITE" >> $GITHUB_ENV
+          echo "DESC=$DESC" >> $GITHUB_ENV
+          echo "CATEGORY=$CATEGORY" >> $GITHUB_ENV
+
+      - name: Update README
         run: |
           python3 - <<'PY'
-          import json, re
+          import re
           from pathlib import Path
 
-          parsed = json.loads(Path("parsed.json").read_text())
+          readme = Path("README.md")
+          text = readme.read_text(encoding="utf-8") if readme.exists() else ""
 
-          # adapt these keys to the labels used in your issue form
-          def get(*keys):
-              for k in keys:
-                  if k in parsed and parsed[k] not in (None, ""):
-                      return parsed[k]
-              return ""
+          name = "${{ env.NAME }}"
+          repo = "${{ env.REPO }}"
+          website = "${{ env.WEBSITE }}"
+          desc = "${{ env.DESC }}"
+          category = "${{ env.CATEGORY }}" or "Other"
 
-          name = get("Project Name", "project-name", "Name")
-          repo = get("Repository URL", "repo-url", "Repo", "Repository")
-          website = get("Project Website URL", "project-url", "Website")
-          desc = get("Short Description", "description", "Description")
-          category = get("Category", "category") or "Other"
-
-          if not repo:
-              print("ERROR: repository URL is required. Aborting.")
-              raise SystemExit(1)
-
-          website_md = "—" if (not website or website.strip() == "") else f"[{website}]({website})"
+          website_md = f"[{website}]({website})" if website else "—"
           row = f"| {name} | [Repo]({repo}) | {website_md} | {desc} |"
 
-          readme_path = Path("README.md")
-          if not readme_path.exists():
-              readme_text = ""
-          else:
-              readme_text = readme_path.read_text(encoding="utf-8")
-
-          lines = readme_text.splitlines()
-
-          # find category heading (case-insensitive match inside any '##' heading)
-          header_idx = None
-          for i, line in enumerate(lines):
-              if line.strip().startswith("##") and re.search(r"\\b" + re.escape(category) + r"\\b", line, re.I):
-                  header_idx = i
-                  break
+          lines = text.splitlines()
+          # Find existing category table
+          cat_header_pattern = re.compile(rf"##\s*{re.escape(category)}", re.I)
+          header_idx = next((i for i, l in enumerate(lines) if cat_header_pattern.match(l)), None)
 
           if header_idx is not None:
-              # find where the section ends (next '##' or EOF)
-              next_header = None
-              for j in range(header_idx+1, len(lines)):
-                  if lines[j].strip().startswith("##"):
-                      next_header = j
-                      break
-              section = lines[header_idx+1: next_header] if next_header else lines[header_idx+1:]
-
-              # find existing table header within the section
-              table_header_idx = None
-              for k, l in enumerate(section):
-                  if re.search(r"\|\s*Name\s*\|.*\|\s*Repo\s*\|", l, re.I):
-                      table_header_idx = header_idx + 1 + k
-                      break
-
+              # Find table header
+              table_header_idx = next((i for i in range(header_idx+1, len(lines))
+                                       if re.search(r"\|\s*Name\s*\|.*\|\s*Repo\s*\|", lines[i])), None)
               if table_header_idx is not None:
-                  # insert row after separator (header_row index + 2)
-                  insert_at = table_header_idx + 2
-                  if insert_at > len(lines):
-                      lines.append(row)
+                  # Check if project already exists
+                  if any(name in l for l in lines[table_header_idx+2:]):
+                      print(f"Project '{name}' already exists in category '{category}'. Skipping insert.")
                   else:
-                      lines.insert(insert_at, row)
+                      # Insert row after table header separator
+                      lines.insert(table_header_idx + 2, row)
               else:
-                  # create table immediately after the heading
+                  # Table header not found, create it
                   insert_at = header_idx + 1
                   block = [
                       "",
@@ -106,11 +87,11 @@ jobs:
                       "|------|------|---------|-------------|",
                       row
                   ]
-                  for offset, ln in enumerate(block):
-                      lines.insert(insert_at + offset, ln)
+                  for offset, l in enumerate(block):
+                      lines.insert(insert_at + offset, l)
           else:
-              # create new section at end
-              if len(lines) and lines[-1].strip() != "":
+              # Category not found, create new section + table
+              if lines and lines[-1].strip() != "":
                   lines.append("")
               lines.append(f"## {category}")
               lines.append("")
@@ -118,16 +99,22 @@ jobs:
               lines.append("|------|------|---------|-------------|")
               lines.append(row)
 
-          readme_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
-          print("README.md updated with row:")
-          print(row)
+          readme.write_text("\n".join(lines)+"\n", encoding="utf-8")
+          print(f"Inserted project '{name}' into category '{category}'")
           PY
 
       - name: Create Pull Request
+        id: create_pr
         uses: peter-evans/create-pull-request@v7
         with:
-          # the action will commit the README changes and open a PR
-          branch: add-project-${{ github.event.issue.number }}
-          title: "Add project: ${{ github.event.issue.title }}"
-          body: "This PR adds a new project from issue #${{ github.event.issue.number }}."
-          commit-message: "Add project from issue #${{ github.event.issue.number }}"
+          branch: ${{ format('add-project-{0}', github.event.inputs.issue_number) }}
+          title: "Add project: ${{ env.NAME }}"
+          body: ${{ format('This PR adds a new project from issue #{0}', github.event.inputs.issue_number) }}
+          commit-message: "Add project: ${{ env.NAME }}"
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Auto-merge PR
+        uses: pascalgn/automerge-action@v0.15.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          merge_method: squash
