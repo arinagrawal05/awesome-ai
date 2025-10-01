@@ -1,0 +1,54 @@
+name: Add Project to README
+
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  add-project:
+    if: github.event.label.name == 'approved'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Extract form data
+        id: extract
+        uses: peter-evans/issue-forms-parser@v2
+        with:
+          issue-number: ${{ github.event.issue.number }}
+
+      - name: Update README
+        run: |
+          NAME="${{ steps.extract.outputs.project-name }}"
+          REPO="${{ steps.extract.outputs.repo-url }}"
+          WEBSITE="${{ steps.extract.outputs.project-url }}"
+          DESC="${{ steps.extract.outputs.description }}"
+          CATEGORY="${{ steps.extract.outputs.category }}"
+
+          # If no website provided, set as "—"
+          if [ -z "$WEBSITE" ]; then
+            WEBSITE="—"
+          else
+            WEBSITE="[$WEBSITE]($WEBSITE)"
+          fi
+
+          ROW="| $NAME | [Repo]($REPO) | $WEBSITE | $DESC |"
+
+          # Insert under the right category section
+          sed -i "/## .*${CATEGORY}/,/^$/ {/|------|------|---------|-------------|/a $ROW" README.md
+
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Add project: ${{ steps.extract.outputs.project-name }}"
+          branch: add-project-${{ github.event.issue.number }}
+          create_branch: true
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          title: "Add project: ${{ steps.extract.outputs.project-name }}"
+          body: "This PR adds a new project from issue #${{ github.event.issue.number }}."
+          branch: add-project-${{ github.event.issue.number }}
