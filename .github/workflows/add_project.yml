@@ -23,7 +23,7 @@ jobs:
 
       - name: Parse issue form (convert to JSON)
         id: parse
-        uses: onmax/issue-form-parser@v1.6.0
+        uses: onmax/issue-form-parser@v1.6
         with:
           issue_number: ${{ github.event.issue.number }}
 
