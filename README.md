@@ -100,50 +100,48 @@ Artificial Intelligence isn’t just research papers anymore — it’s somethin
 
 
 ---
-
 ## 📱 Practical AI Projects  
 
 <details open>
-<summary>### 📝 Writing Assistants</summary>
+<summary>📝 Writing Assistants</summary>
 
-| Project | Description |
-|---------|-------------|
-| [OpenAssistant](https://github.com/LAION-AI/Open-Assistant) | Open-source alternative to ChatGPT. |
-| [Text Generation WebUI](https://github.com/oobabooga/text-generation-webui) | Web UI for running LLMs locally. |
-
-</details>
-
-<details open>
-<summary>### 🎨 Image & Art Generators</summary>
-
-| Project | Description |
-|---------|-------------|
-| [Stable Diffusion WebUI](https://github.com/AUTOMATIC1111/stable-diffusion-webui) | Popular interface for Stable Diffusion. |
-| [ComfyUI](https://github.com/comfyanonymous/ComfyUI) | Node-based workflow for AI art generation. |
+| GitHub | Project | Description |
+|--------|---------|-------------|
+| [![GitHub](https://img.shields.io/badge/GitHub-000?logo=github)](https://github.com/LAION-AI/Open-Assistant) | OpenAssistant | Open-source alternative to ChatGPT. |
+| [![GitHub](https://img.shields.io/badge/GitHub-000?logo=github)](https://github.com/oobabooga/text-generation-webui) | Text Generation WebUI | Web UI for running LLMs locally. |
 
 </details>
 
 <details open>
-<summary>### 🎥 Video & Animation</summary>
+<summary>🎨 Image & Art Generators</summary>
 
-| Project | Description |
-|---------|-------------|
-| [Pika Labs](https://pika.art) | AI tool for video generation. |
-| [Deforum Stable Diffusion](https://github.com/deforum-art/deforum-for-automatic1111-webui) | Stable Diffusion animations. |
+| GitHub | Project | Description |
+|--------|---------|-------------|
+| [![GitHub](https://img.shields.io/badge/GitHub-000?logo=github)](https://github.com/AUTOMATIC1111/stable-diffusion-webui) | Stable Diffusion WebUI | Popular interface for Stable Diffusion. |
+| [![GitHub](https://img.shields.io/badge/GitHub-000?logo=github)](https://github.com/comfyanonymous/ComfyUI) | ComfyUI | Node-based workflow for AI art generation. |
 
 </details>
 
 <details open>
-<summary>### 🎵 Music & Audio</summary>
+<summary>🎥 Video & Animation</summary>
 
-| Project | Description |
-|---------|-------------|
-| [Suno](https://suno.ai) | Generate songs with vocals & lyrics. |
-| [Riffusion](https://github.com/riffusion/riffusion) | Real-time music generation with diffusion models. |
+| GitHub | Project | Description |
+|--------|---------|-------------|
+| — | [Pika Labs](https://pika.art) | AI tool for video generation. |
+| [![GitHub](https://img.shields.io/badge/GitHub-000?logo=github)](https://github.com/deforum-art/deforum-for-automatic1111-webui) | Deforum Stable Diffusion | Stable Diffusion animations. |
 
 </details>
 
----
+<details open>
+<summary>🎵 Music & Audio</summary>
+
+| GitHub | Project | Description |
+|--------|---------|-------------|
+| — | [Suno](https://suno.ai) | Generate songs with vocals & lyrics. |
+| [![GitHub](https://img.shields.io/badge/GitHub-000?logo=github)](https://github.com/riffusion/riffusion) | Riffusion | Real-time music generation with diffusion models. |
+
+</details>
+
 
 ## 📊 Open Datasets & Models  
 - [Hugging Face Datasets](https://huggingface.co/datasets) – Collection of ML datasets.  
@@ -194,3 +192,6 @@ Artificial Intelligence isn’t just research papers anymore — it’s somethin
 - **[Awesome Productivity](https://github.com/ProductivityDirectory/awesome-productivity-tools)**  
 
 ---
+## 🤝 Contributing
+Want to add an awesome Flutter project?  
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) before submitting a PR.
