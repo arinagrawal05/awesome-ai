@@ -30,6 +30,7 @@ A curated list of **practical AI tools, APIs, projects, and resources** you can 
 | [📚 Related Lists](#-related-lists) | More awesome curated AI collections |
 | [🤝 Contributing](#-contributing) | How to contribute your tools, APIs, or projects |
 | NEW1 | NEW1 | [Repo](NEW1) | [Website]((optional)) | Music |
+| Sparsh | this is Sparsh | [Repo](https://github.com/arinagrawal05/awesome-ai/issues) | [Website]((optional)) | Music |
 
 ---
 
