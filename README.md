@@ -22,7 +22,7 @@ A curated list of **practical AI tools, APIs, projects, and resources** you can 
 | [🌟 Getting Started](#-getting-started) | Kickstart your AI journey with must-try apps & resources |
 | [🎯 Editor’s Pick: Useful AI Tools](#-editors-pick-useful-ai-tools) | Hand-picked list of the most impactful AI tools |
 | [🤖 Generous & Free AI APIs](#-generous--free-ai-apis) | APIs with generous free tiers to build your own AI |
-| [📱 500 + 𝗔𝗿𝘁𝗶𝗳𝗶𝗰𝗶𝗮𝗹 𝗜𝗻𝘁𝗲𝗹𝗹𝗶𝗴𝗲𝗻𝗰𝗲 𝗣𝗿𝗼𝗷𝗲𝗰𝘁 𝗟𝗶𝘀𝘁 𝘄𝗶𝘁𝗵 𝗰𝗼𝗱𝗲](#500--artificial-intelligence-project-list-with-code) | Open-source and real-world AI project ideas |
+| [📱 500+ Artificial Intelligence Project List with code](#500--𝗔𝗿𝘁𝗶𝗳𝗶𝗰𝗶𝗮𝗹-𝗜𝗻𝘁𝗲𝗹𝗹𝗶𝗴𝗲𝗻𝗰𝗲-𝗣𝗿𝗼𝗷𝗲𝗰𝘁-𝗟𝗶𝘀𝘁-𝘄𝗶𝘁𝗵-𝗰𝗼𝗱𝗲) | Open-source and real-world AI project ideas |
 | [📊 Open Datasets & Models](#-open-datasets--models) | Public datasets and pretrained models to experiment with |
 | [🧰 Frameworks & Developer Tools](#-frameworks--developer-tools) | Libraries & SDKs for developers building AI apps |
 | [🎥 Learning Resources](#-learning-resources) | Best tutorials, articles, and videos to upskill |
@@ -112,7 +112,6 @@ Follow me on LinkedIn : [![](https://img.shields.io/badge/LinkedIn-0077B5?style=
 
 
 ---
-# AI/ML Projects Collection - Organized by Difficulty Level
 # AI/ML Projects Collection - Organized by Difficulty Level
 
 ## 🟢 Beginner Projects
