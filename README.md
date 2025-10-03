@@ -84,6 +84,9 @@ Artificial Intelligence isn’t just research papers anymore — it’s somethin
 **Proven Performance** – Widely adopted with strong benchmarks and community traction.  
 **Innovation** – Includes bleeding-edge tools like **Veo 3**, **Vibecode**, and **ElevenLabs Music**.  
 
+> 💡 **Want more?**  
+> Check out the full list of [useful tools →](resources/tools.md)
+
 ---
 
 ## 🤖 Generous & Free AI APIs  
@@ -99,9 +102,6 @@ Artificial Intelligence isn’t just research papers anymore — it’s somethin
 | [Replicate](https://replicate.com/)                               | Free tier for some models            | Community-hosted AI apps            |
 | [AssemblyAI](https://www.assemblyai.com/)                         | $5 free credits                      | Speech-to-text + audio intelligence |
 | [ElevenLabs](https://elevenlabs.io/)                              | 10,000 characters/month free         | High-quality text-to-speech         |
-
-> 💡 **Want more?**  
-> Check out the full list of [useful tools →](resources/tools.md)
 
 ---
 ## 500 + 𝗔𝗿𝘁𝗶𝗳𝗶𝗰𝗶𝗮𝗹 𝗜𝗻𝘁𝗲𝗹𝗹𝗶𝗴𝗲𝗻𝗰𝗲 𝗣𝗿𝗼𝗷𝗲𝗰𝘁 𝗟𝗶𝘀𝘁 𝘄𝗶𝘁𝗵 𝗰𝗼𝗱𝗲
