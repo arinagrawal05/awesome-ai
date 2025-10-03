@@ -8,6 +8,7 @@
 [![Open Issues](https://img.shields.io/github/issues/facebook/react?style=flat-square)](https://github.com/facebook/react/issues)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/facebook/react/pulls)
 [![Twitter Follow](https://img.shields.io/twitter/follow/arinagr05?style=social)](https://twitter.com/arinagr05)
+[![All Contributors](https://img.shields.io/badge/all_contributors-5-orange.svg?style=flat-square)](#-contributors)
 
 
 
@@ -99,6 +100,8 @@ Artificial Intelligence isn’t just research papers anymore — it’s somethin
 | [AssemblyAI](https://www.assemblyai.com/)                         | $5 free credits                      | Speech-to-text + audio intelligence |
 | [ElevenLabs](https://elevenlabs.io/)                              | 10,000 characters/month free         | High-quality text-to-speech         |
 
+> 💡 **Want more?**  
+> Check out the full list of [useful tools →](resources/tools.md)
 
 ---
 ## 500 + 𝗔𝗿𝘁𝗶𝗳𝗶𝗰𝗶𝗮𝗹 𝗜𝗻𝘁𝗲𝗹𝗹𝗶𝗴𝗲𝗻𝗰𝗲 𝗣𝗿𝗼𝗷𝗲𝗰𝘁 𝗟𝗶𝘀𝘁 𝘄𝗶𝘁𝗵 𝗰𝗼𝗱𝗲
