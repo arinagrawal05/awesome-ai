@@ -1,126 +1,128 @@
 name: Add Project from Issue
-
 on:
   issues:
-    types: [opened]
-
+    types: [labeled]
 permissions:
   contents: write
   issues: write
   pull-requests: write
-
 jobs:
   add-project:
     runs-on: ubuntu-latest
+    # Only run if the label is "approved"
+    if: github.event.label.name == 'approved'
     steps:
       # Checkout repository
       - name: Checkout repo
         uses: actions/checkout@v4
-
+      
       # Save issue details
       - name: Save issue details
         run: |
           echo "ISSUE_NUMBER=${{ github.event.issue.number }}" >> $GITHUB_ENV
           echo "ISSUE_USER=${{ github.event.issue.user.login }}" >> $GITHUB_ENV
           echo "BRANCH=add-project-${{ github.event.issue.number }}" >> $GITHUB_ENV
-
+      
       # Extract project info from issue body
       - name: Extract project info
         run: |
           echo "${{ github.event.issue.body }}" > issue_body.txt
           python3 <<EOF
-import os, re
-with open("issue_body.txt", encoding="utf-8") as f:
-    body = f.read()
-
-def extract(pattern, default=""):
-    m = re.search(pattern, body, re.I)
-    return m.group(1).strip() if m else default
-
-name = extract(r"Project Name[:\s]*([\s\S]*?)(?:\n|$)")
-repo = extract(r"Repository URL[:\s]*([^\s]+)")
-website = extract(r"Project Website URL[:\s]*([^\s]+)")
-desc = extract(r"Short Description[:\s]*([\s\S]*?)(?:\n|$)")
-category = extract(r"Category[:\s]*([\w\s]+)", "Other").title()
-
-with open(os.environ['GITHUB_ENV'], 'a') as f:
-    f.write(f'NAME={name}\n')
-    f.write(f'REPO={repo}\n')
-    f.write(f'WEBSITE={website}\n')
-    f.write(f'DESC={desc}\n')
-    f.write(f'CATEGORY={category}\n')
-EOF
-
+          import os, re
+          with open("issue_body.txt", encoding="utf-8") as f:
+              body = f.read()
+          def extract(pattern, default=""):
+              m = re.search(pattern, body, re.I)
+              return m.group(1).strip() if m else default
+          name = extract(r"Project Name[:\s]*([\s\S]*?)(?:\n|$)")
+          repo = extract(r"Repository URL[:\s]*([^\s]+)")
+          website = extract(r"Project Website URL[:\s]*([^\s]+)")
+          desc = extract(r"Short Description[:\s]*([\s\S]*?)(?:\n|$)")
+          category = extract(r"Category[:\s]*([\w\s]+)", "Other").title()
+          with open(os.environ['GITHUB_ENV'], 'a') as f:
+              f.write(f'NAME={name}\n')
+              f.write(f'REPO={repo}\n')
+              f.write(f'WEBSITE={website}\n')
+              f.write(f'DESC={desc}\n')
+              f.write(f'CATEGORY={category}\n')
+          EOF
+      
       # Create new branch
       - name: Create branch
-        run: git checkout -b ${{ env.BRANCH }}
-
+        run: |
+          git config user.name "community-bot"
+          git config user.email "community-bot@users.noreply.github.com"
+          git checkout -b ${{ env.BRANCH }}
+      
       # Update README
       - name: Update README
         run: |
           python3 <<EOF
-import os, re
-
-name = os.environ['NAME']
-repo = os.environ['REPO']
-website = os.environ['WEBSITE']
-desc = os.environ['DESC']
-category = os.environ['CATEGORY']
-
-with open('README.md', 'r', encoding='utf-8') as f:
-    readme = f.read()
-
-repo_link = f"[Repo]({repo})" if repo else ""
-website_link = f"[Website]({website})" if website else ""
-links = ' | '.join(filter(None, [repo_link, website_link]))
-new_row = f"| {name} | {desc} | {links} | {category} |\n"
-
-# Append to first table found or end of file
-table_match = re.search(r'(\|.*\|.*\n\|[\s\-:|]+\|.*\n)((?:\|.*\n)*)', readme)
-if table_match:
-    end = table_match.end()
-    readme = readme[:end] + new_row + readme[end:]
-else:
-    readme += "\n" + new_row
-
-with open('README.md', 'w', encoding='utf-8') as f:
-    f.write(readme)
-EOF
-
+          import os, re
+          name = os.environ['NAME']
+          repo = os.environ['REPO']
+          website = os.environ['WEBSITE']
+          desc = os.environ['DESC']
+          category = os.environ['CATEGORY']
+          with open('README.md', 'r', encoding='utf-8') as f:
+              readme = f.read()
+          repo_link = f"[Repo]({repo})" if repo else ""
+          website_link = f"[Website]({website})" if website else ""
+          links = ' | '.join(filter(None, [repo_link, website_link]))
+          new_row = f"| {name} | {desc} | {links} | {category} |\n"
+          # Append to first table found or end of file
+          table_match = re.search(r'(\|.*\|.*\n\|[\s\-:|]+\|.*\n)((?:\|.*\n)*)', readme)
+          if table_match:
+              end = table_match.end()
+              readme = readme[:end] + new_row + readme[end:]
+          else:
+              readme += "\n" + new_row
+          with open('README.md', 'w', encoding='utf-8') as f:
+              f.write(readme)
+          EOF
+      
       # Commit changes with co-author
       - name: Commit changes
         run: |
-          git config user.name "community-bot"
-          git config user.email "community-bot@users.noreply.github.com"
           git add README.md
-          git commit -m "Add project: ${{ env.NAME }}
-
-Co-authored-by: ${{ env.ISSUE_USER }} <${{ env.ISSUE_USER }}@users.noreply.github.com>"
-
+          git commit -m "Add project: ${{ env.NAME }}" -m "Co-authored-by: ${{ env.ISSUE_USER }} <${{ env.ISSUE_USER }}@users.noreply.github.com>"
+      
       # Push branch
       - name: Push branch
         run: git push origin ${{ env.BRANCH }}
-
+      
       # Create PR
       - name: Create Pull Request
-        id: create_pr
-        uses: peter-evans/create-pull-request@v7
-        with:
-          branch: ${{ env.BRANCH }}
-          title: "Add project: ${{ env.NAME }}"
-          body: "This PR adds a new project submitted by @${{ env.ISSUE_USER }}."
-          commit-message: "Add project: ${{ env.NAME }}"
-          token: ${{ secrets.GITHUB_TOKEN }}
-          delete-branch: true
-
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr create \
+            --base main \
+            --head ${{ env.BRANCH }} \
+            --title "Add project: ${{ env.NAME }}" \
+            --body "This PR adds a new project submitted by @${{ env.ISSUE_USER }}.
+          
+          **Project Details:**
+          - Name: ${{ env.NAME }}
+          - Repository: ${{ env.REPO }}
+          - Website: ${{ env.WEBSITE }}
+          - Category: ${{ env.CATEGORY }}
+          
+          Closes #${{ env.ISSUE_NUMBER }}"
+      
       # Auto-merge PR and close issue
       - name: Merge PR and close issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          # Wait a moment for PR to be fully created
+          sleep 5
           PR_NUMBER=$(gh pr list --state open --head ${{ env.BRANCH }} --json number -q '.[0].number')
-          if [ "$PR_NUMBER" != "null" ]; then
-            gh pr merge $PR_NUMBER --squash --admin --delete-branch
-            gh issue comment ${{ env.ISSUE_NUMBER }} --body "Project added successfully, PR merged. 🎉"
-            gh issue close ${{ env.ISSUE_NUMBER }}
+          if [ -n "$PR_NUMBER" ] && [ "$PR_NUMBER" != "null" ]; then
+            gh pr merge $PR_NUMBER --squash --delete-branch
+            gh issue comment ${{ env.ISSUE_NUMBER }} --body "✅ Project added successfully and PR merged! Thank you for your contribution @${{ env.ISSUE_USER }}! 🎉"
+            gh issue close ${{ env.ISSUE_NUMBER }} --reason completed
           else
             echo "No PR found to merge."
+            gh issue comment ${{ env.ISSUE_NUMBER }} --body "❌ Failed to create PR. Please check the workflow logs."
           fi
