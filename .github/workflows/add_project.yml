@@ -47,7 +47,10 @@ jobs:
       
       # Create new branch
       - name: Create branch
-        run: git checkout -b ${{ env.BRANCH }}
+        run: |
+          git config user.name "community-bot"
+          git config user.email "community-bot@users.noreply.github.com"
+          git checkout -b ${{ env.BRANCH }}
       
       # Update README
       - name: Update README
@@ -79,12 +82,8 @@ jobs:
       # Commit changes with co-author
       - name: Commit changes
         run: |
-          git config user.name "community-bot"
-          git config user.email "community-bot@users.noreply.github.com"
           git add README.md
-          git commit -m "Add project: ${{ env.NAME }}
-          
-          Co-authored-by: ${{ env.ISSUE_USER }} <${{ env.ISSUE_USER }}@users.noreply.github.com>"
+          git commit -m "Add project: ${{ env.NAME }}" -m "Co-authored-by: ${{ env.ISSUE_USER }} <${{ env.ISSUE_USER }}@users.noreply.github.com>"
       
       # Push branch
       - name: Push branch
@@ -92,26 +91,26 @@ jobs:
       
       # Create PR
       - name: Create Pull Request
-        id: create_pr
-        uses: peter-evans/create-pull-request@v7
-        with:
-          branch: ${{ env.BRANCH }}
-          title: "Add project: ${{ env.NAME }}"
-          body: "This PR adds a new project submitted by @${{ env.ISSUE_USER }}."
-          commit-message: "Add project: ${{ env.NAME }}"
-          token: ${{ secrets.GITHUB_TOKEN }}
-          delete-branch: true
-      
-      # Auto-merge PR and close issue
-      - name: Merge PR and close issue
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          PR_NUMBER=$(gh pr list --state open --head ${{ env.BRANCH }} --json number -q '.[0].number')
-          if [ "$PR_NUMBER" != "null" ]; then
-            gh pr merge $PR_NUMBER --squash --admin --delete-branch
-            gh issue comment ${{ env.ISSUE_NUMBER }} --body "Project added successfully, PR merged. 🎉"
-            gh issue close ${{ env.ISSUE_NUMBER }}
-          else
-            echo "No PR found to merge."
-          fi
+          gh pr create \
+            --base main \
+            --head ${{ env.BRANCH }} \
+            --title "Add project: ${{ env.NAME }}" \
+            --body "This PR adds a new project submitted by @${{ env.ISSUE_USER }}.
+          
+          **Project Details:**
+          - Name: ${{ env.NAME }}
+          - Repository: ${{ env.REPO }}
+          - Website: ${{ env.WEBSITE }}
+          - Category: ${{ env.CATEGORY }}
+          
+          Closes #${{ env.ISSUE_NUMBER }}"
+      
+      # Comment on issue
+      - name: Comment on issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue comment ${{ env.ISSUE_NUMBER }} --body "✅ Pull request created! A maintainer will review and merge it soon. Thank you for your contribution! 🎉"
