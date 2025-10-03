@@ -23,6 +23,7 @@ A curated list of **practical AI tools, APIs, projects, and resources** you can 
 | [🎯 Editor’s Pick: Useful AI Tools](#-editors-pick-useful-ai-tools) | Hand-picked list of the most impactful AI tools |
 | [🤖 Generous & Free AI APIs](#-generous--free-ai-apis) | APIs with generous free tiers to build your own AI |
 | [📱 500+ Artificial Intelligence Project List with code](#500--𝗔𝗿𝘁𝗶𝗳𝗶𝗰𝗶𝗮𝗹-𝗜𝗻𝘁𝗲𝗹𝗹𝗶𝗴𝗲𝗻𝗰𝗲-𝗣𝗿𝗼𝗷𝗲𝗰𝘁-𝗟𝗶𝘀𝘁-𝘄𝗶𝘁𝗵-𝗰𝗼𝗱𝗲) | Open-source and real-world AI project ideas |
+| [🚀 Contributors Featured Work](#contributors-featured-work) | Open-source and real-world AI project ideas |
 | [📊 Open Datasets & Models](#-open-datasets--models) | Public datasets and pretrained models to experiment with |
 | [🧰 Frameworks & Developer Tools](#-frameworks--developer-tools) | Libraries & SDKs for developers building AI apps |
 | [🎥 Learning Resources](#-learning-resources) | Best tutorials, articles, and videos to upskill |
@@ -188,9 +189,33 @@ Follow me on LinkedIn : [![](https://img.shields.io/badge/LinkedIn-0077B5?style=
 
 **Total Projects: 60+ Project Collections**
 
-*Note: This collection focuses exclusively on project implementations with code, excluding courses, papers, and documentation-only repositories.*
-*Note: This collection excludes course materials and tutorial-only repositories, focusing exclusively on project implementations with code.*                              |
+Note: This collection focuses exclusively on project implementations with code, excluding courses, papers, and documentation-only repositories.
+---
+## Contributors Featured Work
 
+Showcase your AI/ML projects here and gain recognition in the community! Your innovative work deserves the spotlight.
+
+| Contributor | Project | Repository |
+|------------|---------|------------|
+| [Ashish Patel](https://github.com/ashishpatel26) | [Real-time ML Projects](https://github.com/ashishpatel26/Real-time-ML-Project) - 300+ Industry ML Solutions | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/ashishpatel26/Real-time-ML-Project) |
+| [Aman Kharwal](https://github.com/amankharwal) | [Machine Learning Projects](https://thecleverprogrammer.com/) - End-to-End ML Solutions | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/amankharwal) |
+| [Nirant Kasliwal](https://github.com/NirantK) | [Awesome Project Ideas](https://nirantk.com/writing/) - 70+ AI Project Ideas | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/NirantK/awesome-project-ideas) |
+| [Analytics India Magazine](https://github.com/analyticsindiamagazine) | [MachineHack Solutions](https://machinehack.com/) - Competition Winning Projects | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/analyticsindiamagazine/MachineHack) |
+| [Qiusheng Wu](https://github.com/giswqs) | [Earth Engine Python Notebooks](https://geemap.org/) - 300+ Geospatial Analysis Projects | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/giswqs/earthengine-py-notebooks) |
+
+---
+
+### 🌟 Want to be Featured?
+
+**Your project and profile will get limelight and recognition if your work is featured here!**
+
+Submit your AI/ML project for consideration:
+- Must have working code implementation
+- Well-documented with clear README
+- Active maintenance and updates
+- Unique contribution to the AI/ML community
+
+**How to Submit:** Create a pull request or open an issue with your project details!
 
 ## 📊 Open Datasets & Models  
 - [Hugging Face Datasets](https://huggingface.co/datasets) – Collection of ML datasets.  
