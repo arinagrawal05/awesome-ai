@@ -22,15 +22,13 @@ A curated list of **practical AI tools, APIs, projects, and resources** you can 
 | [🌟 Getting Started](#-getting-started) | Kickstart your AI journey with must-try apps & resources |
 | [🎯 Editor’s Pick: Useful AI Tools](#-editors-pick-useful-ai-tools) | Hand-picked list of the most impactful AI tools |
 | [🤖 Generous & Free AI APIs](#-generous--free-ai-apis) | APIs with generous free tiers to build your own AI |
-| [📱 Practical AI Projects](#-practical-ai-projects) | Open-source and real-world AI project ideas |
+| [📱 500 + 𝗔𝗿𝘁𝗶𝗳𝗶𝗰𝗶𝗮𝗹 𝗜𝗻𝘁𝗲𝗹𝗹𝗶𝗴𝗲𝗻𝗰𝗲 𝗣𝗿𝗼𝗷𝗲𝗰𝘁 𝗟𝗶𝘀𝘁 𝘄𝗶𝘁𝗵 𝗰𝗼𝗱𝗲](#500--artificial-intelligence-project-list-with-code) | Open-source and real-world AI project ideas |
 | [📊 Open Datasets & Models](#-open-datasets--models) | Public datasets and pretrained models to experiment with |
 | [🧰 Frameworks & Developer Tools](#-frameworks--developer-tools) | Libraries & SDKs for developers building AI apps |
 | [🎥 Learning Resources](#-learning-resources) | Best tutorials, articles, and videos to upskill |
 | [🌎 Communities & Learning](#-communities--learning) | Places to connect, share, and learn about AI |
 | [📚 Related Lists](#-related-lists) | More awesome curated AI collections |
 | [🤝 Contributing](#-contributing) | How to contribute your tools, APIs, or projects |
-| NEW1 | NEW1 | [Repo](NEW1) | [Website]((optional)) | Music |
-| Sparsh | this is Sparsh | [Repo](https://github.com/arinagrawal05/awesome-ai/issues) | [Website]((optional)) | Music |
 
 ---
 
@@ -102,47 +100,97 @@ Artificial Intelligence isn’t just research papers anymore — it’s somethin
 
 
 ---
-## 📱 Practical AI Projects  
+## 500 + 𝗔𝗿𝘁𝗶𝗳𝗶𝗰𝗶𝗮𝗹 𝗜𝗻𝘁𝗲𝗹𝗹𝗶𝗴𝗲𝗻𝗰𝗲 𝗣𝗿𝗼𝗷𝗲𝗰𝘁 𝗟𝗶𝘀𝘁 𝘄𝗶𝘁𝗵 𝗰𝗼𝗱𝗲
 
-<details open>
-<summary>📝 Writing Assistants</summary>
+***500 AI Machine learning Deep learning Computer vision NLP Projects with code* !!!**
 
-| GitHub | Project | Description |
-|--------|---------|-------------|
-| [![GitHub](https://img.shields.io/badge/GitHub-000?logo=github)](https://github.com/LAION-AI/Open-Assistant) | OpenAssistant | Open-source alternative to ChatGPT. |
-| [![GitHub](https://img.shields.io/badge/GitHub-000?logo=github)](https://github.com/oobabooga/text-generation-webui) | Text Generation WebUI | Web UI for running LLMs locally. |
+![](https://raw.githubusercontent.com/ashishpatel26/500-AI-Machine-learning-Deep-learning-Computer-vision-NLP-Projects-with-code/main/images/Colorful%20Futuristic%20Technology%20Poster.gif)
 
-</details>
+Follow me on LinkedIn : [![](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/arin-agrawal)
 
-<details open>
-<summary>🎨 Image & Art Generators</summary>
+***This list is continuously updated.*** - You can take pull requests and contribute. All Links are tested and working fine. Please ping if any link doesn't work
 
-| GitHub | Project | Description |
-|--------|---------|-------------|
-| [![GitHub](https://img.shields.io/badge/GitHub-000?logo=github)](https://github.com/AUTOMATIC1111/stable-diffusion-webui) | Stable Diffusion WebUI | Popular interface for Stable Diffusion. |
-| [![GitHub](https://img.shields.io/badge/GitHub-000?logo=github)](https://github.com/comfyanonymous/ComfyUI) | ComfyUI | Node-based workflow for AI art generation. |
 
-</details>
+---
+# AI/ML Projects Collection - Organized by Difficulty Level
+# AI/ML Projects Collection - Organized by Difficulty Level
 
-<details open>
-<summary>🎥 Video & Animation</summary>
+## 🟢 Beginner Projects
 
-| GitHub | Project | Description |
-|--------|---------|-------------|
-| — | [Pika Labs](https://pika.art) | AI tool for video generation. |
-| [![GitHub](https://img.shields.io/badge/GitHub-000?logo=github)](https://github.com/deforum-art/deforum-for-automatic1111-webui) | Deforum Stable Diffusion | Stable Diffusion animations. |
+| Domain | Project Name | Link |
+|--------|-------------|------|
+| Computer Vision | 8 OpenCV Projects | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/moadmmh/Awesome-OpenCV) |
+| Computer Vision | 11 Computer Vision Projects with code | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/akshaybhatia10/ComputerVision-Projects) |
+| Computer Vision | 13 Computer Vision Projects with Code | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/anuragreddygv323/computer-vision-projects) |
+| Computer Vision | OpenCV Computer Vision Projects with Python | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/PacktPublishing/OpenCV-Computer-Vision-Projects-with-Python) |
+| Computer Vision | 80+ Computer vision Learning code | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/spmallick/learnopencv) |
+| Computer Vision | Udacity Collection of Computer Vision Projects | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/Bjarten/computer-vision-ND) |
+| NLP | NLP Beginner Projects | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/positivepeng/nlp-beginner-projects) |
+| NLP | 12 NLP Projects | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/gaoisbest/NLP-Projects) |
+| NLP | 6 Amazing NLP Projects | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/anujvyas/Natural-Language-Processing-Projects) |
+| NLP | 363+ NLP Project with Code | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/fighting41love/funNLP) |
+| Python | 25+ Python Projects | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/saadhaxxan/Awesome-Python-Projects) |
+| Python | 1000+ Python Project Codes | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/vinta/awesome-python) |
+| Python | 100+ Python based Machine learning Application Projects | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/prateekiiest/Code-Sleep-Python) |
+| Machine Learning | 365 Days Computer Vision Learning | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/ashishpatel26/365-Days-Computer-Vision-Learning-Linkedin-Post) |
+| Machine Learning | Andrew NG ML notes | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/ashishpatel26/Andrew-NG-Notes) |
+| Machine Learning | Data Analysis and Machine learning Projects | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/rhiever/Data-Analysis-and-Machine-Learning-Projects) |
+| Chatbot | Awesome Chatbot Projects | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/fendouai/Awesome-Chatbot) |
+| iOS | 50+ Code ML Models (For iOS 11) Projects | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/likedan/Awesome-CoreML-Models) |
+| iOS | Awesome ML Demo Project with iOS | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/tucan9389/awesome-ml-demos-with-ios) |
+| Tutorials | Zero to Hero Tensorflow Tutorial | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/mrdbourke/tensorflow-deep-learning) |
 
-</details>
+## 🟡 Intermediate Projects
 
-<details open>
-<summary>🎵 Music & Audio</summary>
+| Domain | Project Name | Link |
+|--------|-------------|------|
+| Computer Vision | 100+ Computer vision Algorithm Implementation | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/gmalivenko/awesome-computer-vision-models) |
+| Computer Vision | 1000+ Computer vision codes | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/jbhuang0604/awesome-computer-vision) |
+| Computer Vision | 3D Computer Vision Research Projects | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/Tom-Hardy-3D-Vision-Workshop/awesome-3D-vision) |
+| Deep Learning | 500+ Top Deep learning Codes | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/aymericdamien/TopDeepLearning) |
+| Deep Learning | 1000+ Awesome Deep learning Collection | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/ChristosChristofidis/awesome-deep-learning) |
+| Deep Learning | Deep learning Treasure | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/kmario23/deep-learning-drizzle) |
+| Deep Learning | Deep and Machine learning Projects | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/nitinkaushik01/Deep_and_Machine_Learning_Projects) |
+| Machine Learning | 500+ Machine learning Codes | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/josephmisiti/awesome-machine-learning) |
+| Machine Learning | 300+ Industry wise Real world projects with code | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/ashishpatel26/Real-time-ML-Project) |
+| Machine Learning | 300+ Machine Learning Resources Collection | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/ujjwalkarn/Machine-Learning-Tutorials) |
+| Machine Learning | 150+ Machine learning Project Ideas with code | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/src-d/awesome-machine-learning-on-source-code) |
+| Machine Learning | 70+ Awesome AI | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/NirantK/awesome-project-ideas) |
+| Machine Learning | AI Projects | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/StevenLei2017/AI_projects) |
+| Machine Learning | Unique AI projects | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/robsalgado/personal_data_science_projects) |
+| NLP | 125+ NLP Language Models Treasure of Transformers | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/ashishpatel26/Treasure-of-Transformers) |
+| NLP | 200+ Awesome NLP learning Collection | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/keon/awesome-nlp) |
+| NLP | 100+ Sentence Embedding(NLP Resources) | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/Separius/awesome-sentence-embedding) |
+| NLP | Advance NLP Projects | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/PacktPublishing/Advanced-NLP-Projects-with-TensorFlow-2.0) |
+| NLP | NLP and Computer Vision Project Collection | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/NELSONZHAO/zhihu) |
+| Multi-Modal | 361+ Pretrained Model Projects for Image, text, Audio and Video | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/PaddlePaddle/PaddleHub) |
+| Multi-Modal | 120+ Multi Model Machine learning Code Projects | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/pliang279/awesome-multimodal-ml) |
+| Data Science | Kaggle projects collection | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/alexattia/Data-Science-Projects) |
+| Data Science | Data Science Project Collection | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/tuangauss/DataScienceProjects) |
+| Data Science | Advance Data Science Projects | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/TheCodex-Me/Projects) |
+| Graph ML | 50+ Graph Classification Project List | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/benedekrozemberczki/awesome-graph-classification) |
+| AutoML | 100+ AutoML Projects with code | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/hibayesian/awesome-automl-papers) |
+| AutoML | Auto Deep learning Project | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/D-X-Y/AutoDL-Projects) |
+| Time Series | Time Series Forecasting Projects | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/deshpandenu/Time-Series-Forecasting-of-Amazon-Stock-Prices-using-Neural-Networks-LSTM-and-GAN-) |
+| Geospatial | 300+ Google Earth Engine Jupyter Notebooks | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/giswqs/earthengine-py-notebooks) |
+| Hackathons | Amazing Hackthon Project Collection | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/analyticsindiamagazine/MachineHack/tree/master/Hackathon_Solutions) |
 
-| GitHub | Project | Description |
-|--------|---------|-------------|
-| — | [Suno](https://suno.ai) | Generate songs with vocals & lyrics. |
-| [![GitHub](https://img.shields.io/badge/GitHub-000?logo=github)](https://github.com/riffusion/riffusion) | Riffusion | Real-time music generation with diffusion models. |
+## 🔴 Advanced Projects
 
-</details>
+| Domain | Project Name | Link |
+|--------|-------------|------|
+| Production ML | 100+ Production Machine learning Projects | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/EthicalML/awesome-production-machine-learning) |
+| Production ML | Deep learning in Production | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/The-AI-Summer/Deep-Learning-In-Production) |
+| Model Interpretability | 100+ Machine Learning Model Interpretability Frameworks | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/jphall663/awesome-machine-learning-interpretability) |
+| Reproducible Research | 100+ Reproducible Research Projects of ML and DL | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/leipzig/awesome-reproducible-research) |
+| GANs | GANs Collection | [![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github)](https://github.com/The-AI-Summer/GANs-in-Computer-Vision) |
+
+---
+
+**Total Projects: 60+ Project Collections**
+
+*Note: This collection focuses exclusively on project implementations with code, excluding courses, papers, and documentation-only repositories.*
+*Note: This collection excludes course materials and tutorial-only repositories, focusing exclusively on project implementations with code.*                              |
 
 
 ## 📊 Open Datasets & Models  
