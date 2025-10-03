@@ -2,7 +2,7 @@ name: Add Project from Issue
 
 on:
   issues:
-    types: [labeled]
+    types: [opened]
 
 permissions:
   contents: write
@@ -10,157 +10,117 @@ permissions:
   pull-requests: write
 
 jobs:
-  restrict-and-add-project:
+  add-project:
     runs-on: ubuntu-latest
     steps:
       # Checkout repository
-      - name: Checkout repository
+      - name: Checkout repo
         uses: actions/checkout@v4
 
-      # Define allowed and restricted labels
-      - name: Define label rules
+      # Save issue details
+      - name: Save issue details
         run: |
-          echo "RESTRICTED=approved,security,release-ready" >> $GITHUB_ENV
-          echo "ALLOWED=bug,question,help wanted,enhancement,Music,Video,Chatbot" >> $GITHUB_ENV
-          echo "MAINTAINERS=arinagrawal05" >> $GITHUB_ENV
+          echo "ISSUE_NUMBER=${{ github.event.issue.number }}" >> $GITHUB_ENV
+          echo "ISSUE_USER=${{ github.event.issue.user.login }}" >> $GITHUB_ENV
+          echo "BRANCH=add-project-${{ github.event.issue.number }}" >> $GITHUB_ENV
 
-      # Enforce label restrictions
-      - name: Enforce label restrictions
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # Extract project info from issue body
+      - name: Extract project info
         run: |
-          LABEL="${{ github.event.label.name }}"
-          SENDER="${{ github.event.sender.login }}"
-          ISSUE_NUMBER="${{ github.event.issue.number }}"
+          echo "${{ github.event.issue.body }}" > issue_body.txt
+          python3 <<EOF
+import os, re
+with open("issue_body.txt", encoding="utf-8") as f:
+    body = f.read()
 
-          IFS=',' read -ra RESTRICTED_ARRAY <<< "$RESTRICTED"
-          IFS=',' read -ra ALLOWED_ARRAY <<< "$ALLOWED"
-          IFS=',' read -ra MAINTAINERS_ARRAY <<< "$MAINTAINERS"
+def extract(pattern, default=""):
+    m = re.search(pattern, body, re.I)
+    return m.group(1).strip() if m else default
 
-          if [[ " ${RESTRICTED_ARRAY[*]} " =~ " $LABEL " ]] && [[ ! " ${MAINTAINERS_ARRAY[*]} " =~ " $SENDER " ]]; then
-            echo "Restricted label '$LABEL' added by non-maintainer. Removing..."
-            gh issue edit $ISSUE_NUMBER --remove-label "$LABEL"
-            gh issue comment $ISSUE_NUMBER --body "Hi @$SENDER, the label '$LABEL' is restricted to maintainers and has been removed."
-            exit 0
-          fi
+name = extract(r"Project Name[:\s]*([\s\S]*?)(?:\n|$)")
+repo = extract(r"Repository URL[:\s]*([^\s]+)")
+website = extract(r"Project Website URL[:\s]*([^\s]+)")
+desc = extract(r"Short Description[:\s]*([\s\S]*?)(?:\n|$)")
+category = extract(r"Category[:\s]*([\w\s]+)", "Other").title()
 
-          if [[ ! " ${RESTRICTED_ARRAY[*]} " =~ " $LABEL " ]] && [[ ! " ${ALLOWED_ARRAY[*]} " =~ " $LABEL " ]]; then
-            echo "Label '$LABEL' is not allowed. Removing..."
-            gh issue edit $ISSUE_NUMBER --remove-label "$LABEL"
-            gh issue comment $ISSUE_NUMBER --body "Hi @$SENDER, the label '$LABEL' is not allowed and has been removed."
-            exit 0
-          fi
+with open(os.environ['GITHUB_ENV'], 'a') as f:
+    f.write(f'NAME={name}\n')
+    f.write(f'REPO={repo}\n')
+    f.write(f'WEBSITE={website}\n')
+    f.write(f'DESC={desc}\n')
+    f.write(f'CATEGORY={category}\n')
+EOF
 
-      # Extract project info (regex based, case-insensitive)
-      - name: Save issue body
-        if: ${{ github.event.label.name == 'approved' && contains(env.MAINTAINERS, github.event.sender.login) }}
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh issue view ${{ github.event.issue.number }} --json body -q '.body' > issue_body.txt
-      
-      - name: Extract project info with Python
-        if: ${{ github.event.label.name == 'approved' && contains(env.MAINTAINERS, github.event.sender.login) }}
+      # Create new branch
+      - name: Create branch
+        run: git checkout -b ${{ env.BRANCH }}
+
+      # Update README
+      - name: Update README
         run: |
           python3 <<EOF
-          import os, re
-          
-          with open("issue_body.txt", encoding="utf-8") as f:
-              body = f.read()
-          
-          def extract(pattern, default=""):
-              m = re.search(pattern, body, re.I)
-              return m.group(1).strip() if m else default
-          
-          name = extract(r"Project Name[:\s]*([\s\S]*?)(?:\n|$)")
-          repo = extract(r"Repository URL[:\s]*([^\s]+)")
-          website = extract(r"Project Website URL[:\s]*([^\s]+)")
-          desc = extract(r"Short Description[:\s]*([\s\S]*?)(?:\n|$)")
-          category = extract(r"Category[:\s]*([\w\s]+)", "Other").title()
-          
-          with open(os.environ['GITHUB_ENV'], 'a') as f:
-              f.write(f'NAME={name}\n')
-              f.write(f'REPO={repo}\n')
-              f.write(f'WEBSITE={website}\n')
-              f.write(f'DESC={desc}\n')
-              f.write(f'CATEGORY={category}\n')
-          
-          print(f"Extracted project info: {name}, {repo}, {website}, {desc}, {category}")
-          EOF
+import os, re
 
-      - name: Add project to README
-        if: ${{ github.event.label.name == 'approved' && contains(env.MAINTAINERS, github.event.sender.login) }}
+name = os.environ['NAME']
+repo = os.environ['REPO']
+website = os.environ['WEBSITE']
+desc = os.environ['DESC']
+category = os.environ['CATEGORY']
+
+with open('README.md', 'r', encoding='utf-8') as f:
+    readme = f.read()
+
+repo_link = f"[Repo]({repo})" if repo else ""
+website_link = f"[Website]({website})" if website else ""
+links = ' | '.join(filter(None, [repo_link, website_link]))
+new_row = f"| {name} | {desc} | {links} | {category} |\n"
+
+# Append to first table found or end of file
+table_match = re.search(r'(\|.*\|.*\n\|[\s\-:|]+\|.*\n)((?:\|.*\n)*)', readme)
+if table_match:
+    end = table_match.end()
+    readme = readme[:end] + new_row + readme[end:]
+else:
+    readme += "\n" + new_row
+
+with open('README.md', 'w', encoding='utf-8') as f:
+    f.write(readme)
+EOF
+
+      # Commit changes with co-author
+      - name: Commit changes
         run: |
-          python3 <<EOF
-          import os, re
-          
-          # Read environment variables
-          name = os.environ.get('NAME', '')
-          repo = os.environ.get('REPO', '')
-          website = os.environ.get('WEBSITE', '')
-          desc = os.environ.get('DESC', '')
-          category = os.environ.get('CATEGORY', 'Other')
-          
-          # Read README
-          with open('README.md', 'r', encoding='utf-8') as f:
-              readme = f.read()
-          
-          # Create new row
-          repo_link = f'[Repo]({repo})' if repo else ''
-          website_link = f'[Website]({website})' if website else ''
-          links = ' | '.join(filter(None, [repo_link, website_link]))
-          new_row = f'| {name} | {desc} | {links} | {category} |\n'
-          
-          # Find the table and add row
-          # Look for category section header or end of table
-          category_pattern = rf'(###\s*{re.escape(category)}.*?\n.*?\n)((?:\|.*\n)+)'
-          match = re.search(category_pattern, readme, re.IGNORECASE)
-          
-          if match:
-              # Add to existing category
-              table_end = match.end()
-              readme = readme[:table_end] + new_row + readme[table_end:]
-          else:
-              # Try to add to a general table or at the end
-              # Look for any markdown table
-              table_pattern = r'(\|.*\|.*\n\|[\s\-:|]+\|.*\n)((?:\|.*\n)*)'
-              match = re.search(table_pattern, readme)
-              if match:
-                  table_end = match.end()
-                  readme = readme[:table_end] + new_row + readme[table_end:]
-          
-          # Write back
-          with open('README.md', 'w', encoding='utf-8') as f:
-              f.write(readme)
-          
-          print(f"Added project to README: {name}")
-          EOF
+          git config user.name "community-bot"
+          git config user.email "community-bot@users.noreply.github.com"
+          git add README.md
+          git commit -m "Add project: ${{ env.NAME }}
 
-      # Create Pull Request
+Co-authored-by: ${{ env.ISSUE_USER }} <${{ env.ISSUE_USER }}@users.noreply.github.com>"
+
+      # Push branch
+      - name: Push branch
+        run: git push origin ${{ env.BRANCH }}
+
+      # Create PR
       - name: Create Pull Request
-        if: ${{ github.event.label.name == 'approved' && contains(env.MAINTAINERS, github.event.sender.login) }}
         id: create_pr
         uses: peter-evans/create-pull-request@v7
         with:
-          branch: add-project-${{ github.event.issue.number }}
-          title: 'Add project'
-          body: 'This PR adds a new project from issue #${{ github.event.issue.number }}'
+          branch: ${{ env.BRANCH }}
+          title: "Add project: ${{ env.NAME }}"
+          body: "This PR adds a new project submitted by @${{ env.ISSUE_USER }}."
           commit-message: "Add project: ${{ env.NAME }}"
           token: ${{ secrets.GITHUB_TOKEN }}
           delete-branch: true
 
-      # Merge PR, delete branch, and close issue
-      - name: Merge PR, delete branch, and close issue
-        if: ${{ github.event.label.name == 'approved' && contains(env.MAINTAINERS, github.event.sender.login) }}
-        env:
-          GH_TOKEN: ${{ secrets.MERGE_TOKEN }}
+      # Auto-merge PR and close issue
+      - name: Merge PR and close issue
         run: |
-          PR_NUMBER=$(gh pr list --state open --head add-project-${{ github.event.issue.number }} --json number -q '.[0].number')
-          if [ "$PR_NUMBER" != "null" ] && [ -n "$PR_NUMBER" ]; then
-            echo "Merging PR #$PR_NUMBER..."
+          PR_NUMBER=$(gh pr list --state open --head ${{ env.BRANCH }} --json number -q '.[0].number')
+          if [ "$PR_NUMBER" != "null" ]; then
             gh pr merge $PR_NUMBER --squash --admin --delete-branch
-            gh issue comment ${{ github.event.issue.number }} --body "Project added, PR merged, branch deleted. 🎉"
-            gh issue close ${{ github.event.issue.number }}
+            gh issue comment ${{ env.ISSUE_NUMBER }} --body "Project added successfully, PR merged. 🎉"
+            gh issue close ${{ env.ISSUE_NUMBER }}
           else
-            echo "No open PR found for add-project-${{ github.event.issue.number }}"
+            echo "No PR found to merge."
           fi
