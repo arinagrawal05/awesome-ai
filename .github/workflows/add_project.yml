@@ -1,7 +1,7 @@
 name: Add Project from Issue
 on:
   issues:
-    types: [opened]
+    types: [labeled]
 permissions:
   contents: write
   issues: write
@@ -9,6 +9,8 @@ permissions:
 jobs:
   add-project:
     runs-on: ubuntu-latest
+    # Only run if the label is "approved"
+    if: github.event.label.name == 'approved'
     steps:
       # Checkout repository
       - name: Checkout repo
@@ -108,9 +110,19 @@ jobs:
           
           Closes #${{ env.ISSUE_NUMBER }}"
       
-      # Comment on issue
-      - name: Comment on issue
+      # Auto-merge PR and close issue
+      - name: Merge PR and close issue
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh issue comment ${{ env.ISSUE_NUMBER }} --body "✅ Pull request created! A maintainer will review and merge it soon. Thank you for your contribution! 🎉"
+          # Wait a moment for PR to be fully created
+          sleep 5
+          PR_NUMBER=$(gh pr list --state open --head ${{ env.BRANCH }} --json number -q '.[0].number')
+          if [ -n "$PR_NUMBER" ] && [ "$PR_NUMBER" != "null" ]; then
+            gh pr merge $PR_NUMBER --squash --delete-branch
+            gh issue comment ${{ env.ISSUE_NUMBER }} --body "✅ Project added successfully and PR merged! Thank you for your contribution @${{ env.ISSUE_USER }}! 🎉"
+            gh issue close ${{ env.ISSUE_NUMBER }} --reason completed
+          else
+            echo "No PR found to merge."
+            gh issue comment ${{ env.ISSUE_NUMBER }} --body "❌ Failed to create PR. Please check the workflow logs."
+          fi
