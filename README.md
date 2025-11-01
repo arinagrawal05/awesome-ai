@@ -31,6 +31,7 @@ A curated list of **practical AI tools, APIs, projects, and resources** you can 
 | [🌎 Communities & Learning](#-communities--learning) | Places to connect, share, and learn about AI |
 | [📚 Related Lists](#-related-lists) | More awesome curated AI collections |
 | [🤝 Contributing](#-contributing) | How to contribute your tools, APIs, or projects |
+| Good name | yess | [Repo](https://github.com/arinagrawal05/awesome-ai/issues) | [Website]((optional)) | Music |
 
 ---
 
