@@ -228,6 +228,7 @@ Submit your AI/ML project for consideration:
 ---
 
 ## 🧰 Frameworks & Developer Tools  
+- [ARC-Neuron LLMBuilder](https://github.com/GareBear99/ARC-Neuron-LLMBuilder) – Local-first AI model lifecycle framework for benchmark receipts, candidate/incumbent model promotion, archive-ready lineage, and governed small-model improvement.
 - [LangChain](https://www.langchain.com) – Framework for building applications with LLMs.  
 - [LlamaIndex](https://www.llamaindex.ai) – Data framework to connect custom data to LLMs.  
 - [Vercel AI SDK](https://sdk.vercel.ai) – Build AI-powered apps with ease.  
